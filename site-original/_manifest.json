@@ -1,0 +1,93 @@
+{
+  "baixados": [
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/images/favicon.ico",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/css/pgmei.css",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.eot",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.eot?#iefix",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.woff2",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.woff",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.ttf",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/img/bkg_header_entes.png",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/modernizr.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/spin.min.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/jquery.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/bootstrap.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/ladda.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/toastr.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/select.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/pgmei_old.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/pgmei_layout.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/images/logo-simples.png",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/images/marca_Simples_entes.png",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/Identificacao",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/emissao.php",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/faz-um-pix.min.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/emitirDAS",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/consulta/extrato",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/consulta/pendencia",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/consulta/dasEmitidos",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/pgmei_emissao.js",
+    "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/css/bootstrap-glyphicons.css",
+    "https://pagarmeumei.com/favicon.ico"
+  ],
+  "erros": [
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.eot",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.eot?#iefix",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.woff2",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.woff",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.ttf",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/Identificacao",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/emitirDAS",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/consulta/extrato",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/consulta/pendencia",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/consulta/dasEmitidos",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/js/pgmei_emissao.js",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/SimplesNacional/Aplicacoes/pgmei.app/assets/css/bootstrap-glyphicons.css",
+      "erro": "Request failed with status code 404"
+    },
+    {
+      "url": "https://pagarmeumei.com/favicon.ico",
+      "erro": "Request failed with status code 404"
+    }
+  ]
+}

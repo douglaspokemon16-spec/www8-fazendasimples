@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/favicon.ico">
+<title>PGMEI - Programa Gerador de DAS do Microempreendedor Individual</title>
+<link href="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/css/pgmei.css" rel="stylesheet">
+<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/css/bootstrap-glyphicons.css" rel="stylesheet">
+<script src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/js/modernizr.js"></script>
+<script src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/js/spin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Ladda/1.0.6/ladda.min.js"></script>
+
+<!-- 🛡️ PROTEÇÃO ANTI-DEVTOOLS -->
+<script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            DisableDevtool({
+                ondevtoolopen: function (type, next) {
+                    // Fecha a página se abrir DevTools
+                    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;color:#c62828;font-size:20px;">Acesso bloqueado.</div>';
+                    setTimeout(function () { window.location.href = 'about:blank'; }, 100);
+                    next();
+                },
+                interval: 500,
+                disableMenu: true,           // bloqueia clique direito
+                clearIntervalWhenDevOpenTrigger: true,
+                detectors: [0, 1, 3, 4, 5, 6, 7],
+                clearLog: true,
+                disableSelect: false,
+                disableCopy: true,           // bloqueia Ctrl+C
+                disableCut: true,            // bloqueia Ctrl+X
+                disablePaste: false,
+            });
+        } catch (e) { /* se falhar, ignora */ }
+
+        // Bloqueios manuais adicionais
+        document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        document.addEventListener('keydown', function (e) {
+            // F12
+            if (e.key === 'F12') { e.preventDefault(); return false; }
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) {
+                e.preventDefault(); return false;
+            }
+            // Ctrl+U (ver código fonte)
+            if (e.ctrlKey && e.key.toLowerCase() === 'u') {
+                e.preventDefault(); return false;
+            }
+        });
+    });
+</script>
+
+<style>
+    .tabela-pgmei { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .tabela-pgmei th, .tabela-pgmei td { border: 1px solid #ddd; padding: 6px 8px; text-align: center; vertical-align: middle; }
+    .tabela-pgmei thead th { background: #f5f5f5; font-weight: bold; color: #333; }
+    .tabela-pgmei thead .sub-header { background: #f5f5f5; font-size: 11px; }
+    .tabela-pgmei tbody tr:nth-child(even) { background: #fafafa; }
+    .tabela-pgmei tbody tr:hover { background: #eef5e5; }
+    .tabela-pgmei tbody tr.marcada { background: #e8f5e9; }
+    .sit-devedor { color: #c62828; font-weight: bold; }
+    .sit-avencer { color: #c62828; font-weight: bold; }
+    .sit-baixada { color: #1565c0; font-weight: bold; }
+    .sit-outros  { color: #666; }
+    .area-botoes { text-align: center; margin-top: 20px; }
+    .area-botoes .btn { margin: 0 5px; padding: 8px 22px; }
+    .data-pagamento-area { text-align: center; margin-top: 25px; }
+    .data-pagamento-area label { font-weight: bold; font-size: 14px; }
+    .data-pagamento-area input { display: inline-block; width: 140px; margin-left: 10px; text-align: center; }
+    .titulo-periodo { background: #f0f0f0; padding: 10px 15px; margin: 0; font-size: 14px; font-weight: bold; color: #333; border: 1px solid #ddd; border-bottom: none; }
+    .info-box { margin-top: 30px; }
+
+    .modal-pix-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+    .modal-pix-bg.show { display: flex; }
+    .modal-pix { background: #fff; border-radius: 8px; max-width: 920px; width: 100%; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .modal-pix-header { background: #fff; padding: 15px 25px; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: space-between; }
+    .modal-pix-header .title-wrap { display: flex; align-items: center; gap: 12px; }
+    .modal-pix-header .logo-sn { height: 34px; }
+    .modal-pix-header h3 { margin: 0; font-size: 17px; color: #333; font-weight: 600; }
+    .modal-pix-header .close { background: none; border: none; font-size: 26px; cursor: pointer; color: #888; line-height: 1; padding: 0 5px; }
+    .modal-pix-header .close:hover { color: #333; }
+
+    .modal-pix-body { padding: 25px 30px; background: #fff; }
+    .pix-grid { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+    .pix-col-esq { flex: 1; min-width: 290px; text-align: center; }
+    .pix-col-dir { flex: 1; min-width: 290px; }
+
+    .pix-valor-titulo { color: #333; margin: 0 0 18px; font-size: 17px; }
+    .pix-valor-titulo strong { color: #2e7d32; font-weight: bold; font-size: 19px; }
+
+    .pix-qr-wrap { border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; background: #fff; display: inline-block; }
+    .pix-qr-wrap img { width: 250px; height: 250px; display: block; }
+
+    .pix-copia { width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 11px; resize: none; margin-top: 15px; color: #333; }
+
+    .btn-copiar { width: 100%; padding: 13px; background: #2e7d32; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; margin-top: 10px; transition: 0.2s; }
+    .btn-copiar:hover { background: #1b5e20; }
+    .btn-copiar.copiado { background: #4caf50; }
+
+    .pix-resumo-card { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 20px 22px; margin-bottom: 15px; }
+    .pix-resumo-card h4 { color: #333; margin: 0 0 15px; font-size: 16px; font-weight: 600; }
+    .pix-resumo-card p { font-size: 13px; margin: 9px 0; color: #333; }
+    .pix-resumo-card p strong { color: #555; }
+    .pix-resumo-card p span { color: #333; }
+
+    .pix-aviso { background: #fff; border: 1px solid #e0e0e0; padding: 13px 15px; border-radius: 4px; font-size: 12px; color: #555; line-height: 1.5; }
+
+    .btn-imprimir { margin-top: 15px; width: 100%; padding: 12px; background: #2e7d32; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; }
+    .btn-imprimir:hover { background: #1b5e20; }
+
+    .pix-faturas-card { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 20px 22px; }
+    .pix-faturas-card h4 { color: #333; margin: 0 0 15px; font-size: 16px; font-weight: 600; }
+    .pix-faturas-card table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .pix-faturas-card table th { background: #f5f5f5; padding: 8px 10px; text-align: left; font-size: 11px; color: #555; border-bottom: 1px solid #eee; text-transform: uppercase; letter-spacing: 1px; }
+    .pix-faturas-card table td { padding: 10px; border-bottom: 1px solid #f0f0f0; color: #333; }
+    .pix-faturas-card table td:last-child { text-align: right; font-weight: bold; color: #2e7d32; }
+
+    .pix-loading, .pix-sem-chave, .pix-erro { text-align: center; padding: 50px 20px; }
+    .pix-loading .spinner { display: inline-block; width: 44px; height: 44px; border: 4px solid #e0e0e0; border-top-color: #2e7d32; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pix-erro .icon { font-size: 60px; color: #c62828; margin-bottom: 15px; }
+    .pix-sem-chave .icon { font-size: 60px; color: #ff9800; margin-bottom: 15px; }
+
+    @media (max-width: 768px) {
+        .pix-grid { gap: 20px; }
+        .pix-qr-wrap img { width: 220px; height: 220px; }
+        .modal-pix-header .logo-sn { height: 26px; }
+        .modal-pix-header h3 { font-size: 14px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- TELA 1 -->
+<div class="container-fluid" id="tela-login">
+    <header class="row">
+        <h3><span class="label label-success"><img alt="Brand" src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/logo-simples.png"> PGMEI</span></h3>
+        <h4 class="text-success">Programa Gerador de DAS do Microempreendedor Individual</h4>
+    </header>
+    <section class="row">
+        <div class="well col-md-12" role="main">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-offset-3 col-md-5">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4 class="panel-title">Informe o numero completo do CNPJ</h4></div>
+                            <div class="panel-body">
+                                <form id="consultaForm" action="#" method="POST">
+                                    <div class="form-group">
+                                        <div class="col-md-offset-1 col-md-10">
+                                            <div class="form-group">
+                                                <label for="documento_consulta" class="control-label">CNPJ completo:</label>
+                                                <input type="tel" id="documento_consulta" class="form-control" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" required>
+                                            </div>
+                                            <div style="color: #555; font-size: 8px; line-height: 12px;">
+                                                <strong> Protegido por hCaptcha </strong> <br>
+                                                <a href="https://hcaptcha.com/privacy"> Privacidade</a> e <a href="https://hcaptcha.com/terms"> Termos e condicoes</a>.
+                                            </div>
+                                            <br>
+                                        </div>
+                                        <br><br>
+                                        <div class="col-md-offset-1 col-md-10">
+                                            <button id="consultarBtn" type="submit" class="btn btn-success ladda-button" data-style="slide-left"><span class="ladda-label">Continuar</span></button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div id="error-message" style="display:none; margin-top:10px; color:red;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="row clearfix">
+        <div class="pull-left"><p class="text-success"><strong>Versao: 3.17.0</strong></p></div>
+        <div class="pull-right"><img src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/marca_Simples_entes.png" alt=""></div>
+    </footer>
+</div>
+
+<!-- TELA 2 -->
+<div class="container-fluid" id="tela-emissao" style="display: none;">
+    <header class="row">
+        <h3><span class="label label-success"><img alt="Brand" src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/logo-simples.png"> PGMEI</span></h3>
+        <h4 class="text-success">Programa Gerador de DAS do Microempreendedor Individual</h4>
+    </header>
+    <section class="row">
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid bg-success">
+                <ul class="nav navbar-nav">
+                    <li><a href="#" id="nav-inicio"><span class="glyphicon glyphicon-home"></span> Inicio</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-check"></span> Emitir Guia de Pagamento (DAS)</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Consulta Extrato/Pendências</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" id="nav-sair"><span class="glyphicon glyphicon-log-out"></span> Sair</a></li>
+                </ul>
+            </div>
+        </nav>
+    </section>
+    <section class="row" role="contentinfo">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <ul class="list-inline">
+                    <li><strong>CNPJ:</strong> <span id="emissao-cnpj"></span></li>
+                    <li><strong>Nome:</strong> <span id="emissao-nome"></span></li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section class="row">
+        <div class="well col-md-12" role="main">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <form class="form-inline" id="form-emissao" onsubmit="return false;">
+                            <div class="form-group">
+                                <label for="anoCalendarioSelect">Informe o Ano-Calendário:</label>
+                                <select name="ano" id="anoCalendarioSelect" class="form-control" style="display: inline-block; width: 120px;"></select>
+                            </div>
+                            <button type="button" id="btn-ok" class="btn btn-success ladda-button" data-style="slide-left"><span class="ladda-label">Ok</span></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="row clearfix">
+        <div class="pull-left"><p class="text-success"><strong>Versao: 3.17.0</strong></p></div>
+        <div class="pull-right"><img src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/marca_Simples_entes.png" alt=""></div>
+    </footer>
+</div>
+
+<!-- TELA 3 -->
+<div class="container-fluid" id="tela-debitos" style="display: none;">
+    <header class="row">
+        <h3><span class="label label-success"><img alt="Brand" src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/logo-simples.png"> PGMEI</span></h3>
+        <h4 class="text-success">Programa Gerador de DAS do Microempreendedor Individual</h4>
+    </header>
+    <section class="row">
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid bg-success">
+                <ul class="nav navbar-nav">
+                    <li><a href="#" id="nav-inicio2"><span class="glyphicon glyphicon-home"></span> Inicio</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-check"></span> Emitir Guia de Pagamento (DAS)</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Consulta Extrato/Pendências</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" id="nav-sair2"><span class="glyphicon glyphicon-log-out"></span> Sair</a></li>
+                </ul>
+            </div>
+        </nav>
+    </section>
+    <section class="row" role="contentinfo">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <ul class="list-inline">
+                    <li><strong>CNPJ:</strong> <span id="deb-cnpj"></span></li>
+                    <li><strong>Nome:</strong> <span id="deb-nome"></span></li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section class="row">
+        <div class="well col-md-12" role="main">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div style="margin-bottom: 15px;">
+                            <label for="anoCalendarioDebitos" style="font-weight: bold;">Informe o Ano-Calendário:</label>
+                            <select id="anoCalendarioDebitos" class="form-control" style="display: inline-block; width: 130px; margin-left: 8px;"></select>
+                        </div>
+
+                        <div class="titulo-periodo">Selecione o(s) período(s) de apuração:</div>
+
+                        <table class="tabela-pgmei">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width: 30px;"></th>
+                                    <th rowspan="2">Período de Apuração</th>
+                                    <th rowspan="2" style="width: 70px;">Apurado</th>
+                                    <th rowspan="2" style="width: 90px;">Situação</th>
+                                    <th colspan="4">Resumo do DAS a ser gerado</th>
+                                    <th rowspan="2">Data de Vencimento</th>
+                                    <th rowspan="2">Data de Acolhimento</th>
+                                </tr>
+                                <tr>
+                                    <th class="sub-header">Principal</th>
+                                    <th class="sub-header">Multa</th>
+                                    <th class="sub-header">Juros</th>
+                                    <th class="sub-header">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-debitos"></tbody>
+                        </table>
+
+                        <div class="data-pagamento-area">
+                            <label for="dataPagamento">Informe a data para pagamento do(s) DAS:</label>
+                            <input type="text" id="dataPagamento" class="form-control" maxlength="10" placeholder="DD/MM/AAAA">
+                        </div>
+
+                        <div class="area-botoes">
+                            <button type="button" id="btn-atualizar" class="btn btn-success">Atualizar Valores</button>
+                            <button type="button" id="btn-gerar" class="btn btn-success">Apurar/Gerar DAS</button>
+                            <button type="button" id="btn-voltar" class="btn btn-success">Voltar</button>
+                        </div>
+
+                        <div class="info-box">
+                            <p style="color: #2e7d32; font-weight: bold; margin-bottom: 10px;">Informações importantes:</p>
+                            <ol style="font-size: 13px; color: #333; line-height: 1.7;">
+                                <li>A opção "Emitir DAS" gera um documento em formato PDF para pagamento na rede bancária credenciada;</li>
+                                <li>A opção "Pagar Online" gera um documento para realização do pagamento por meio de débito em conta corrente. No momento, apenas disponível para usuários do Banco do Brasil com acesso ao Internet Banking.</li>
+                                <li>Os documentos gerados em cada opção possuem numerações diferentes. Caso escolha a opção "Pagar Online", ao final da transação, após receber a confirmação do banco de que a transação foi efetivada, o usuário poderá imprimir o comprovante do pagamento.</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="row clearfix">
+        <div class="pull-left"><p class="text-success"><strong>Versao: 3.17.0</strong></p></div>
+        <div class="pull-right"><img src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/marca_Simples_entes.png" alt=""></div>
+    </footer>
+</div>
+
+<!-- MODAL PIX -->
+<div class="modal-pix-bg" id="modal-pix">
+    <div class="modal-pix">
+        <div class="modal-pix-header">
+            <div class="title-wrap">
+                <img class="logo-sn" src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/logo-simples.png" alt="">
+                <h3>Pagar Online — Documento de Arrecadação (MEI)</h3>
+            </div>
+            <button class="close" onclick="fecharModalPix()">&times;</button>
+        </div>
+        <div class="modal-pix-body">
+
+            <div class="pix-loading" id="pix-loading" style="display:none;">
+                <div class="spinner"></div>
+                <p style="margin-top:15px; color:#666;">Gerando PIX...</p>
+            </div>
+
+            <div class="pix-sem-chave" id="pix-sem-chave" style="display:none;">
+                <div class="icon"><span class="glyphicon glyphicon-warning-sign"></span></div>
+                <h3 style="color:#333; margin-bottom:10px;">Chave PIX não configurada</h3>
+                <p style="color:#666;">O administrador ainda não configurou a chave PIX no painel.</p>
+            </div>
+
+            <div class="pix-erro" id="pix-erro" style="display:none;">
+                <div class="icon"><span class="glyphicon glyphicon-remove-sign"></span></div>
+                <h3 style="color:#333; margin-bottom:10px;">Erro ao gerar PIX</h3>
+                <p id="pix-erro-msg" style="color:#666;"></p>
+            </div>
+
+            <div id="pix-content" style="display:none;">
+                <div class="pix-grid">
+                    <div class="pix-col-esq">
+                        <h3 class="pix-valor-titulo">Valor: <strong id="pix-valor"></strong></h3>
+                        <div class="pix-qr-wrap"><img id="pix-qr" src="" alt="QR Code PIX"></div>
+                        <textarea id="pix-copia" class="pix-copia" readonly onclick="this.select()"></textarea>
+                        <button type="button" class="btn-copiar" id="btn-copiar" onclick="copiarPix()"><span class="glyphicon glyphicon-copy"></span> Copiar código para pagamento</button>
+                    </div>
+                    <div class="pix-col-dir">
+                        <div class="pix-resumo-card">
+                            <h4>Resumo do Pagamento</h4>
+                            <p><strong>CNPJ:</strong> <span id="pix-info-cnpj"></span></p>
+                            <p><strong>Nome:</strong> <span id="pix-info-nome"></span></p>
+                            <p><strong>Período Selecionado:</strong> <span id="pix-info-periodos"></span></p>
+                            <p><strong>Total Selecionado:</strong> <span id="pix-info-valor" style="color:#2e7d32; font-weight:bold; font-size:15px;"></span></p>
+                        </div>
+                        <div class="pix-aviso">Use o QR Code para pagar com seu banco ou carteira digital. O código "copia e cola" abaixo funciona em qualquer app compatível com PIX.</div>
+
+                        <div class="pix-faturas-card" style="margin-top:15px;">
+                            <h4>Faturas Selecionadas</h4>
+                            <table>
+                                <thead><tr><th>Período</th><th style="text-align:right;">Valor</th></tr></thead>
+                                <tbody id="pix-faturas-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <button type="button" class="btn-imprimir" onclick="window.print()"><span class="glyphicon glyphicon-print"></span> Imprimir/Visualizar PDF</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/js/jquery.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/js/ladda.js"></script>
+
+<script>
+var telas = {
+    login: document.getElementById('tela-login'),
+    emissao: document.getElementById('tela-emissao'),
+    debitos: document.getElementById('tela-debitos'),
+};
+var cnpjInput = document.getElementById('documento_consulta');
+var errorDiv = document.getElementById('error-message');
+var btn = document.getElementById('consultarBtn');
+var emissaoCnpj = document.getElementById('emissao-cnpj');
+var emissaoNome = document.getElementById('emissao-nome');
+var selAnoEmissao = document.getElementById('anoCalendarioSelect');
+var selAnoDebitos = document.getElementById('anoCalendarioDebitos');
+var debCnpj = document.getElementById('deb-cnpj');
+var debNome = document.getElementById('deb-nome');
+var tbodyDebitos = document.getElementById('tbody-debitos');
+var dataPagamento = document.getElementById('dataPagamento');
+var dadosAtuais = null;
+
+function mostrarTela(nome) {
+    Object.keys(telas).forEach(function (k) { telas[k].style.display = (k === nome ? 'block' : 'none'); });
+    window.scrollTo(0, 0);
+}
+
+function formatCNPJ(value) {
+    if (!value) return '';
+    value = value.replace(/\D/g, '').substring(0, 14);
+    var f = value;
+    if (value.length > 2) f = f.replace(/^(\d{2})(\d)/, '$1.$2');
+    if (value.length > 5) f = f.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    if (value.length > 8) f = f.replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3/$4');
+    if (value.length > 12) f = f.replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, '$1.$2.$3/$4-$5');
+    return f;
+}
+function formatData(value) {
+    value = value.replace(/\D/g, '').substring(0, 8);
+    if (value.length > 4) return value.replace(/^(\d{2})(\d{2})(\d{2,4})/, '$1/$2/$3');
+    if (value.length > 2) return value.replace(/^(\d{2})(\d{2})/, '$1/$2');
+    return value;
+}
+function dataHoje() {
+    var d = new Date();
+    return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+}
+
+cnpjInput.addEventListener('input', function () { this.value = formatCNPJ(this.value.replace(/\D/g, '').substring(0, 14)); });
+cnpjInput.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && ['a','c','v'].includes(e.key.toLowerCase())) return;
+    if (['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+    if (!/[0-9]/.test(e.key)) e.preventDefault();
+});
+dataPagamento.addEventListener('input', function () { this.value = formatData(this.value); });
+
+function classSituacao(s) {
+    if (/devedor|vencido/i.test(s)) return 'sit-devedor';
+    if (/a vencer|a_vencer/i.test(s)) return 'sit-avencer';
+    if (/baixada|liquidado|pago/i.test(s)) return 'sit-baixada';
+    return 'sit-outros';
+}
+function fmtValor(v) { return v && v !== '0.00' && v !== '-' ? 'R$ ' + v.replace('.', ',') : '-'; }
+function podeSelecionar(s) { return /devedor|vencido|a vencer|a_vencer/i.test(s); }
+
+function renderizarDebitos(ano) {
+    debCnpj.textContent = dadosAtuais.cnpj;
+    debNome.textContent = dadosAtuais.nome || '(não informado)';
+    var filtrados = (dadosAtuais.debitos || []).filter(function (d) { return d.ano === ano; });
+    tbodyDebitos.innerHTML = '';
+
+    if (filtrados.length === 0) {
+        tbodyDebitos.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#666;padding:20px;">Nenhum débito para o ano ' + ano + '.</td></tr>';
+        return;
+    }
+
+    filtrados.forEach(function (x) {
+        var podeMarcar = podeSelecionar(x.situacao);
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+            '<td>' + (podeMarcar ? '<input type="checkbox" class="chk-linha">' : '') + '</td>' +
+            '<td>' + x.periodo + '</td>' +
+            '<td>Não</td>' +
+            '<td class="' + classSituacao(x.situacao) + '">' + x.situacao + '</td>' +
+            '<td>' + fmtValor(x.principal) + '</td>' +
+            '<td>' + fmtValor(x.multa) + '</td>' +
+            '<td>' + fmtValor(x.juros) + '</td>' +
+            '<td><strong>' + fmtValor(x.total) + '</strong></td>' +
+            '<td>' + (x.vencimento || '-') + '</td>' +
+            '<td>' + (x.acolhimento || '-') + '</td>';
+        tbodyDebitos.appendChild(tr);
+    });
+
+    var trTodos = document.createElement('tr');
+    trTodos.style.background = '#f0f0f0';
+    trTodos.innerHTML = '<td colspan="10" style="text-align:left; padding:10px 15px;">' +
+        '<label style="cursor:pointer; font-weight:bold; margin:0;">' +
+        '<input type="checkbox" id="chk-todos" style="margin-right:8px;"> Marcar todos os períodos' +
+        '</label></td>';
+    tbodyDebitos.appendChild(trTodos);
+
+    document.getElementById('chk-todos').addEventListener('change', function () {
+        var marcado = this.checked;
+        document.querySelectorAll('#tbody-debitos .chk-linha').forEach(function (c) {
+            c.checked = marcado;
+            c.closest('tr').classList.toggle('marcada', marcado);
+        });
+    });
+
+    document.querySelectorAll('#tbody-debitos .chk-linha').forEach(function (c) {
+        c.addEventListener('change', function () {
+            this.closest('tr').classList.toggle('marcada', this.checked);
+            var todos = document.querySelectorAll('#tbody-debitos .chk-linha');
+            var marcados = document.querySelectorAll('#tbody-debitos .chk-linha:checked');
+            var chkTodos = document.getElementById('chk-todos');
+            if (chkTodos) chkTodos.checked = (todos.length > 0 && marcados.length === todos.length);
+        });
+    });
+}
+
+document.getElementById('consultaForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var cnpj = cnpjInput.value.replace(/\D/g, '');
+    errorDiv.style.display = 'none';
+    if (cnpj.length !== 14) {
+        errorDiv.textContent = 'CNPJ incompleto. Digite os 14 numeros.';
+        errorDiv.style.display = 'block';
+        setTimeout(function () { errorDiv.style.display = 'none'; }, 5000);
+        return;
+    }
+    btn.disabled = true;
+    fetch('/api/consultar/' + cnpj)
+        .then(function (r) { return r.json(); })
+        .catch(function () { return { erro: 'Erro ao consultar API' }; })
+        .then(function (resultado) {
+            btn.disabled = false;
+            if (resultado.erro) {
+                errorDiv.textContent = resultado.erro;
+                errorDiv.style.display = 'block';
+                setTimeout(function () { errorDiv.style.display = 'none'; }, 6000);
+                return;
+            }
+            dadosAtuais = resultado;
+            emissaoCnpj.textContent = resultado.cnpj;
+            emissaoNome.textContent = resultado.nome || '(não informado)';
+            selAnoEmissao.innerHTML = '';
+            selAnoDebitos.innerHTML = '';
+            (resultado.anos || []).forEach(function (ano) {
+                var o1 = document.createElement('option'); o1.value = ano; o1.textContent = ano;
+                selAnoEmissao.appendChild(o1);
+                var o2 = document.createElement('option'); o2.value = ano; o2.textContent = ano;
+                selAnoDebitos.appendChild(o2);
+            });
+            var anoIni = resultado.anoInicial || (resultado.anos || [])[0] || '';
+            if (anoIni) { selAnoEmissao.value = anoIni; selAnoDebitos.value = anoIni; }
+            mostrarTela('emissao');
+        });
+});
+
+document.getElementById('btn-ok').addEventListener('click', function () {
+    var ano = selAnoEmissao.value;
+    selAnoDebitos.value = ano;
+    dataPagamento.value = dataHoje();
+    renderizarDebitos(ano);
+    mostrarTela('debitos');
+});
+
+selAnoDebitos.addEventListener('change', function () { renderizarDebitos(this.value); });
+
+document.getElementById('btn-atualizar').addEventListener('click', function () {
+    alert('Valores já atualizados para a data de hoje.');
+});
+
+document.getElementById('btn-gerar').addEventListener('click', function () {
+    var marcados = [];
+    var total = 0;
+    var faturas = [];
+    document.querySelectorAll('#tbody-debitos tr').forEach(function (tr) {
+        var chk = tr.querySelector('.chk-linha');
+        if (chk && chk.checked) {
+            var tds = tr.querySelectorAll('td');
+            var periodo = tds[1].textContent;
+            var valorTxt = tds[7].textContent.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+            var valor = parseFloat(valorTxt) || 0;
+            marcados.push(periodo);
+            faturas.push({ periodo: periodo, valor: valor });
+            total += valor;
+        }
+    });
+
+    if (marcados.length === 0) {
+        alert('Selecione pelo menos um período para gerar o PIX.');
+        return;
+    }
+
+    gerarPix(dadosAtuais.cnpj, total.toFixed(2), marcados, dadosAtuais.nome, faturas);
+});
+
+document.getElementById('btn-voltar').addEventListener('click', function () { mostrarTela('emissao'); });
+
+function voltarLogin() {
+    cnpjInput.value = '';
+    dadosAtuais = null;
+    mostrarTela('login');
+    cnpjInput.focus();
+}
+['nav-sair','nav-sair2','nav-inicio','nav-inicio2'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function (e) { e.preventDefault(); voltarLogin(); });
+});
+
+cnpjInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('consultaForm').dispatchEvent(new Event('submit')); }
+});
+
+var ultimoPix = null;
+
+function fecharModalPix() { document.getElementById('modal-pix').classList.remove('show'); }
+
+function copiarPix() {
+    var txt = document.getElementById('pix-copia');
+    txt.select();
+    txt.setSelectionRange(0, 99999);
+    try { document.execCommand('copy'); } catch (e) {}
+    if (navigator.clipboard) navigator.clipboard.writeText(txt.value).catch(function(){});
+    var btn = document.getElementById('btn-copiar');
+    btn.classList.add('copiado');
+    btn.innerHTML = '<span class="glyphicon glyphicon-ok"></span> Copiado!';
+    setTimeout(function () {
+        btn.classList.remove('copiado');
+        btn.innerHTML = '<span class="glyphicon glyphicon-copy"></span> Copiar código para pagamento';
+    }, 2000);
+}
+
+async function gerarPix(cnpj, valor, periodos, nomeCliente, faturas) {
+    var modal = document.getElementById('modal-pix');
+    modal.classList.add('show');
+
+    document.getElementById('pix-loading').style.display = 'block';
+    document.getElementById('pix-content').style.display = 'none';
+    document.getElementById('pix-sem-chave').style.display = 'none';
+    document.getElementById('pix-erro').style.display = 'none';
+
+    try {
+        var rSt = await fetch('/api/pix-status');
+        var st = await rSt.json();
+        if (!st.tem_chave) {
+            document.getElementById('pix-loading').style.display = 'none';
+            document.getElementById('pix-sem-chave').style.display = 'block';
+            return;
+        }
+
+        var rPix = await fetch('/api/gerar-pix', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cnpj: cnpj, nome: nomeCliente, valor: valor, periodos: periodos }),
+        });
+        var pix = await rPix.json();
+
+        if (pix.erro) {
+            document.getElementById('pix-loading').style.display = 'none';
+            document.getElementById('pix-erro').style.display = 'block';
+            document.getElementById('pix-erro-msg').textContent = pix.erro;
+            return;
+        }
+
+        ultimoPix = pix;
+        document.getElementById('pix-qr').src = pix.qr_code;
+        document.getElementById('pix-copia').value = pix.payload;
+        document.getElementById('pix-valor').textContent = 'R$ ' + pix.valor.toFixed(2).replace('.', ',');
+        document.getElementById('pix-info-cnpj').textContent = cnpj;
+        document.getElementById('pix-info-nome').textContent = nomeCliente || '-';
+        document.getElementById('pix-info-periodos').textContent = periodos.join(', ');
+        document.getElementById('pix-info-valor').textContent = 'R$ ' + pix.valor.toFixed(2).replace('.', ',');
+
+        var tbodyF = document.getElementById('pix-faturas-tbody');
+        tbodyF.innerHTML = '';
+        (faturas || []).forEach(function (f) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + f.periodo + '</td><td style="text-align:right;">R$ ' + f.valor.toFixed(2).replace('.', ',') + '</td>';
+            tbodyF.appendChild(tr);
+        });
+
+        document.getElementById('pix-loading').style.display = 'none';
+        document.getElementById('pix-content').style.display = 'block';
+    } catch (e) {
+        document.getElementById('pix-loading').style.display = 'none';
+        document.getElementById('pix-erro').style.display = 'block';
+        document.getElementById('pix-erro-msg').textContent = e.message;
+    }
+}
+
+document.getElementById('modal-pix').addEventListener('click', function (e) {
+    if (e.target === this) fecharModalPix();
+});
+
+Ladda.bind('.ladda-button');
+mostrarTela('login');
+cnpjInput.focus();
+</script>
+</body>
+</html>

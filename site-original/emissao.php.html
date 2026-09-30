@@ -1,0 +1,2969 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+    <meta http-equiv="content-language" content="pt-br">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <title>PGMEI - Programa Gerador de DAS do Microempreendedor Individual</title>
+    <link href="assets/css/pgmei.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.js"></script>
+    <script src="assets/js/ladda.js"></script>
+    <script src="assets/js/toastr.js"></script>
+    <script src="assets/js/select.js"></script>
+    <script src="assets/js/faz-um-pix.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Adicione no <head> da página -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.3.0/fontfaceobserver.js"></script>
+
+    <style>
+    /* Container principal para o formulário */
+    #tabelaPeriodos {
+        margin-top: 20px;
+        padding: 0;
+    }
+
+    
+    /* Responsividade para o painel */
+    .panel {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 2100px; /* Limita a largura máxima do painel */
+    }
+
+    .panel-heading {
+        background-color: #f5f5f5;
+        padding: 10px 15px;
+        border-bottom: 1px solid #ddd;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .panel-title {
+        font-size: 18px;
+        font-weight: normal;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    /* Estilo para tabelas - MAIORES ALTERAÇÕES AQUI */
+    .table-responsive {
+        width: 100%;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0;
+        display: block;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+        font-size: 14px;
+        min-width: 800px; /* Largura mínima para manter o conteúdo legível */
+    }
+
+    .table thead th {
+        text-align: center;
+        background-color: #f5f5f5;
+        font-weight: bold;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        text-align: center;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .table-condensed td,
+    .table-condensed th {
+        padding: 8px;
+    }
+
+    /* Botões */
+    .btn {
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-size: 14px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-success {
+        background-image: linear-gradient(to bottom, #5cb85c 0, #419641 100%);
+        background-repeat: repeat-x;
+        border-color: #4cae4c;
+        color: #fff;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 1px rgba(0,0,0,.075);
+    }
+
+    .btn-success:hover,
+    .btn-success:focus {
+        background-color: #419641;
+        background-position: 0 -15px;
+    }
+
+    /* Input de data */
+    .form-control.datepicker {
+        max-width: 300px;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    /* Responsividade - ALTERAÇÕES IMPORTANTES PARA MOBILE */
+    @media screen and (max-width: 768px) {
+        #tabelaPeriodos {
+            padding: 0;
+            margin-left: -10px;
+            margin-right: -10px;
+            width: calc(100% + 20px);
+        }
+
+        .panel {
+            border-radius: 0;
+            box-shadow: none;
+            border-left: none;
+            border-right: none;
+        }
+
+        .panel-heading {
+            border-radius: 0;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .panel-body {
+            padding: 5px 0;
+        }
+
+        .table-responsive {
+            border: none;
+            border-radius: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table {
+            font-size: 12px;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 6px 4px;
+            font-size: 11px;
+        }
+
+        .btn {
+            padding: 8px 10px;
+            font-size: 12px;
+            margin: 5px;
+        }
+
+        .form-control.datepicker {
+            max-width: 100%;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .panel-footer {
+            padding: 10px 5px;
+        }
+    }
+
+    @media screen and (max-width: 576px) {
+        .table-responsive {
+            margin-left: -5px;
+            margin-right: -5px;
+            width: calc(100% + 10px);
+        }
+
+        .table {
+            min-width: 700px;
+        }
+
+        .btn {
+            width: calc(100% - 10px);
+            margin: 5px;
+        }
+
+        .form-control.datepicker {
+            width: calc(100% - 20px);
+            margin: 0 auto 10px;
+        }
+    }
+
+
+
+    .btn-primary {
+        width: 60%;
+        background-image: linear-gradient(to bottom, #5cb85c 0, #419641 100%) !important;
+        border: none;
+        color: #fff;
+        padding: 10px 15px;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-image: linear-gradient(to bottom, #4cae4c 0, #387e38 100%) !important;
+    }
+
+    .align {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .aln {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    textarea {
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.5;
+        width: 90%;
+        max-width: 500px;
+        padding: 10px;
+        overflow: hidden;
+        resize: none;
+        margin: 10px auto;
+        border: 1px solid #ccc;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+    }
+
+    .flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #666;
+        margin: 0 auto 20px;
+        width: 90%;
+        max-width: 600px;
+    }
+
+    .flex h3 {
+        font-size: 16px;
+        margin: 0;
+        color: #333;
+    }
+
+    .flex p {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        margin: 0;
+        color: #666;
+    }
+
+    .pn2 {
+        display: none;
+    }
+</style>
+
+    <style>
+        .aln {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+
+    <style>
+        #pagamento {
+            display: none;
+            /* Inicialmente escondido */
+            position: fixed;
+            /* Sobreposto ao resto do conteúdo */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            /* Ajuste para ocupar até 90% da largura da tela em dispositivos móveis */
+            max-width: 600px;
+            /* Em telas maiores, limite a largura a 600px */
+            background-color: white;
+            /* Fundo branco */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            z-index: 1000;
+            /* Sobrepõe outros elementos */
+            padding: 20px;
+            overflow-y: auto;
+            /* Caso o conteúdo ultrapasse a altura, habilitar o scroll */
+        }
+
+        #overlay {
+            display: none;
+            /* Inicialmente escondido */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            /* Fundo semitransparente */
+            z-index: 999;
+            /* Fica atrás do popup */
+        }
+    </style>
+
+    <script>
+        function copiar() {
+            var copyText = document.getElementById("pixCode");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            document.getElementById("clip_btn").innerHTML = 'Copiar Codigo <i class="fas fa-clipboard-check"></i>';
+            alert('Código PIX Copiado com Sucesso')
+        }
+
+        function reais(v) {
+            v = v.replace(/\D/g, "");
+            v = v / 100;
+            v = v.toFixed(2);
+            return v;
+        }
+
+        function mascara(o, f) {
+            v_obj = o;
+            v_fun = f;
+            setTimeout("execmascara()", 1);
+        }
+
+        function execmascara() {
+            v_obj.value = v_fun(v_obj.value);
+        }
+
+        function showList(event) {
+            event.preventDefault(); // Previne o envio do formulário e a atualização da página
+            document.querySelector('.list').style.display = 'block';
+            return false; // Retorna false para garantir que o formulário não seja enviado
+        }
+
+        function verificarSelecao() {
+            var checkboxes = document.querySelectorAll('.paSelecionado');
+            var botaoPagarPix = document.getElementById('btnPagarPix');
+
+            var peloMenosUmMarcado = false;
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    peloMenosUmMarcado = true;
+                    break;
+                }
+            }
+
+            if (peloMenosUmMarcado) {
+                botaoPagarPix.disabled = false;
+            } else {
+                botaoPagarPix.disabled = true;
+                event.preventDefault();
+                alert('O botão "Pagar PIX" está desabilitado. Por favor, selecione pelo menos uma opção antes de prosseguir.');
+
+            }
+        }
+
+        function clicarPagarPix() {
+            verificarSelecao();
+
+            if (peloMenosUmMarcado) {
+                botaoPagarPix.disabled = false;
+            } else {
+                botaoPagarPix.disabled = true;
+                event.preventDefault();
+                alert('O botão "Pagar PIX" está desabilitado. Por favor, selecione pelo menos uma opção antes de prosseguir.');
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <header class="row">
+            <h3><span class="label label-success"><img alt="Brand" src="assets/images/logo-simples.png"> PGMEI</span></h3>
+            <h4 class="text-success">Programa Gerador de DAS do Microempreendedor Individual</h4>
+        </header>
+
+        <section class="row">
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container-fluid bg-success">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#navbarCollapse" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="index.php??SimplesNacional/Aplicacoes/ATSPO/pgmei.app/Identificacao/Inicio"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Inicio</a>
+                            </li>
+                            <li>
+                                <form id="cnpjForm" action="emissao?brazil=15,13,03,PM,352,12,12,000000,18,3,2024,Wednesday.seguro" method="POST" style="display: none;">
+                                    <input type="hidden" name="cnpj" id="cnpjHiddenInput" value="">
+                                    <input type="hidden" name="idempresa" id="idempresa" value="">
+                                </form>
+                                <a href="emissao.php??SimplesNacional/Aplicacoes/ATSPO/pgmei.app/Identificacao/Inicio" onclick="submitCnpjForm()"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> Emitir Guia de Pagamento (DAS) </a>
+                            </li>
+                            <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+
+                                            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+
+                                         Consulta Extrato/Pendências 
+                                        <span class="caret"></span>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                            <li class="disabled">
+                                                <a href="SimplesNacional/Aplicacoes/ATSPO/pgmei.app/Identificacao/consulta/extrato" data-toggle="popover" title="" data-content="A opção Consulta Extrato/Pendências é habilitada apenas no PGMEI - versão completa, que exige controle de acesso." data-original-title="Acesso restrito"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Consulta Extrato</a>
+                                            </li>
+                                            <li class="disabled">
+                                                <a href="SimplesNacional/Aplicacoes/ATSPO/pgmei.app/Identificacao/consulta/pendencia" data-toggle="popover" title="" data-content="A opção Consulta Extrato/Pendências é habilitada apenas no PGMEI - versão completa, que exige controle de acesso." data-original-title="Acesso restrito"><span class="glyphicon glyphicon-saved" aria-hidden="true"></span> Consulta Pendência no Simei</a>
+                                            </li>
+                                            <li class="disabled">
+                                                <a href="SimplesNacional/Aplicacoes/ATSPO/pgmei.app/Identificacao/consulta/dasEmitidos" data-toggle="popover" title="" data-content="A opção Consulta Extrato/Pendências é habilitada apenas no PGMEI - versão completa, que exige controle de acesso." data-original-title="Acesso restrito"><span class="glyphicon glyphicon-barcode" aria-hidden="true"></span> Consulta DAS Emitidos</a>
+                                            </li>
+                                    </ul>
+
+                                </li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="index.php??SimplesNacional/Aplicacoes/ATSPO/pgmei.app/Identificacao/Identificacao"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                                    Sair</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </section>
+
+        <section class="row" role="contentinfo">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <ul class="list-inline">
+                        <li><strong>CNPJ:</strong> <span id="cnpj"></span></li>
+                        <li><strong>Nome:</strong> <span id="nome"></span></li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+<section class="row">
+    <div class="well col-md-12" role="main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <form class="form-inline" id="selectAnoForm">
+                        <div class="form-group">
+                            <label for="anoCalendarioSelect">Informe o Ano-Calendário:</label>
+                            <select name="ano" id="anoCalendarioSelect" class="form-control">
+                                <option value="">Selecione</option>
+                            </select>
+                            <button type="submit" id="okButton" class="btn btn-success" disabled>Ok</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <style>
+                #tabelaPeriodos .panel,
+                #tabelaPeriodos .panel-heading,
+                #tabelaPeriodos .panel-footer,
+                #tabelaPeriodos .table-responsive {
+                    border-radius: 0;
+                }
+
+                #tabelaPeriodos .panel-body {
+                    padding: 8px;
+                }
+
+                #tabelaPeriodos .table-responsive {
+                    width: 100%;
+                    margin: 0;
+                }
+
+                #tabelaPeriodos .table .check {
+                    text-align: left;
+                }
+
+                @media (max-width: 768px) {
+                    #tabelaPeriodos .table-responsive {
+                        border-left: 1px solid #ddd;
+                        border-right: 1px solid #ddd;
+                    }
+                    #tabelaPeriodos .table th,
+                    #tabelaPeriodos .table td {
+                        padding: 5px;
+                        font-size: 12px;
+                    }
+                    #tabelaPeriodos .panel-footer .btn {
+                        margin-bottom: 5px;
+                        width: 100%;
+                    }
+                    #tabelaPeriodos .panel-footer .col-md-12 {
+                        padding-left: 5px;
+                        padding-right: 5px;
+                    }
+                }
+
+                /* 🔹 Remove a sobreposição do #tabelaPeriodos.list */
+                #tabelaPeriodos.list {
+                    display: none !important;
+                }
+
+                #tabelaPeriodos.list.visible {
+                    display: block !important;
+                }
+            </style>
+
+            <div id="tabelaPeriodos" name="tabelaPeriodos" class="row list" style="margin-top: 20px;">
+                <div class="col-md-12 col-xs-12">
+                    <form id="emissaoDas" method="post" role="form" action="">
+                        <div class="row">
+                            <div class="col-md-12 col-xs-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Selecione o(s) período(s) de apuração:</h4>
+                                    </div>
+
+                                    <div class="panel-body">
+                                        <div id="resumoDAS" class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
+                                            <table class="table table-hover table-condensed emissao is-detailed" data-pa-selecionado="" style="min-width: 600px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="check" rowspan="2" style="width: 28px;">
+                                                            <input type="checkbox" id="selecionarTodos" value="0" title="Selecionar Todos">
+                                                        </th>
+                                                        <th class="periodo" rowspan="2" style="width: 15%;">Período de Apuração</th>
+                                                        <th class="apurado" rowspan="2" style="width: 10%;">Apurado</th>
+                                                        <th class="situacao" rowspan="2" style="width: 10%;">Situação</th>
+                                                        <th colspan="6" style="width: 50%;">Resumo do DAS a ser gerado</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="principal" style="width: 10%;">Principal</th>
+                                                        <th class="multa" style="width: 10%;">Multa</th>
+                                                        <th class="juros" style="width: 10%;">Juros</th>
+                                                        <th class="total" style="width: 10%;">Total</th>
+                                                        <th class="vencimento" style="width: 15%;">Data de Vencimento</th>
+                                                        <th class="acolhimento" style="width: 15%;">Data de Acolhimento</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tabelaBody">
+                                                    <!-- Dados preenchidos dinamicamente -->
+                                                </tbody>
+                                                <tfoot id="resumoConsolidado" style="display: none;">
+                                                    <tr>
+                                                        <td colspan="4">DAS consolidado contendo os valores de todos os PA selecionados.</td>
+                                                        <td class="principal updatable text-center">R$ 0,00</td>
+                                                        <td class="multa updatable text-center">R$ 0,00</td>
+                                                        <td class="juros updatable text-center">R$ 0,00</td>
+                                                        <td class="total updatable text-center">R$ 0,00</td>
+                                                        <td class="vencimento updatable text-center">Diversos</td>
+                                                        <td class="acolhimento updatable text-center"></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-footer">
+                                        <div class="row" style="text-align:center;">
+                                            <label for="dataPagamentoInformada">Informe a data para pagamento do(s) DAS:</label>
+                                            <input type="text" class="form-control datepicker" name="dataConsolidacao" id="dataPagamentoInformada" readonly>
+                                            <br>
+
+                                            <div class="col-md-12 col-xs-12 text-center" style="text-align:center;">
+                                                <br>
+                                                <button type="button" id="btnAtualizarValores" class="btn btn-success" disabled style="opacity:0.65; cursor:not-allowed;">
+                                                    Atualizar Valores
+                                                </button>
+                                                <button id="btnPagarPix1" type="button" class="btn btn-success ladda-button" data-loading="">
+                                                    <span class="ladda-label">Apurar/Gerar DAS</span>
+                                                    <span class="ladda-spinner">
+                                                        <div class="" role="progressbar" style="position: absolute; width: 0px; z-index: auto; left: auto; top: auto;"></div>
+                                                    </span>
+                                                </button>
+                                                <button type="submit" id="btnPagarOnline" class="btn btn-success ladda-button" data-style="slide-left">
+                                                    <span class="ladda-label">Voltar</span>
+                                                    <span class="ladda-spinner"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    
+
+                    <!-- Mensagem de alerta -->
+                    <div id="alertContainer" class="alert alert-danger" role="alert" style="display: none; text-align: center; margin-top: 10px;">
+                        Por favor, selecione pelo menos um período de apuração.
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFORMAÇÕES IMPORTANTES NA PARTE INFERIOR -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h5 class="text-info">Informações importantes:</h5>
+                    <ol class="text-info">
+                        <li>A opção "Emitir DAS" gera um documento em formato PDF para pagamento na rede bancária credenciada;</li>
+                        <li>A opção "Pagar Online" gera um documento para realização do pagamento por meio de débito em conta corrente. No momento, apenas disponível para usuários do Banco do Brasil com acesso ao Internet Banking.</li>
+                        <li>Os documentos gerados em cada opção possuem numerações diferentes. Caso escolha a opção "Pagar Online", ao final da transação, após receber a confirmação do banco de que a transação foi efetivada, o usuário poderá imprimir o comprovante do pagamento. Caso queira imprimi-lo posteriormente, deverá acessar o Portal e-CAC, no sítio da Receita Federal do Brasil, utilizando certificado digital ou código de acesso do referido Portal, selecionar a aba "Pagamentos e Parcelamentos" e, na sequência, o serviço "Consulta de Comprovante de Pagamento - DARF, DAS e DJE".</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Mensagem de Confirmação -->
+            <div id="mensagemConfirmacao" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.2); text-align: center; z-index: 1000; border-radius: 8px;">
+                <button id="fecharMensagem" style="position: absolute; top: 5px; right: 10px; border: none; background: none; font-size: 16px; cursor: pointer;">&times;</button>
+                <p>Seu pagamento pode demorar até 24h para compensar as guias pagas no sistema, por favor aguarde.</p>
+                <button id="fecharMensagemBtn" class="btn btn-primary" style="margin-top: 10px;">OK, entendi</button>
+            </div>
+
+            <script>
+                // Função para formatar a data
+                function formatarData(data) {
+                    const dia = String(data.getDate()).padStart(2, '0');
+                    const mes = String(data.getMonth() + 1).padStart(2, '0');
+                    const ano = data.getFullYear();
+                    return `${dia}/${mes}/${ano}`;
+                }
+
+                // Definir a data atual
+                document.addEventListener('DOMContentLoaded', function() {
+                    const dataAtual = new Date();
+                    const dataFormatada = formatarData(dataAtual);
+                    const dataInput = document.getElementById('dataPagamentoInformada');
+                    if (dataInput) {
+                        dataInput.value = dataFormatada;
+                    }
+
+                    if ($('.datepicker').datepicker) {
+                        $('.datepicker').datepicker('setDate', dataAtual);
+                    }
+                });
+
+                function updateTotal() {
+                    const checkboxes = document.querySelectorAll('.paSelecionado:checked');
+                    let total = 0;
+                    checkboxes.forEach(checkbox => {
+                        const rawValue = checkbox.value.trim();
+                        if (rawValue && !isNaN(parseFloat(rawValue))) {
+                            total += parseFloat(rawValue);
+                        }
+                    });
+                    return total.toFixed(2).replace('.', ',');
+                }
+
+                // Botão Apurar/Gerar DAS
+                document.getElementById('btnPagarPix1').addEventListener('click', function() {
+                    const checkboxes = document.querySelectorAll('.paSelecionado:checked');
+                    if (checkboxes.length === 0) {
+                        document.getElementById('alertContainer').style.display = 'block';
+                        return;
+                    }
+
+                    const total = updateTotal();
+                    if (total.trim() == '0,00') return;
+
+                    document.getElementById('alertContainer').style.display = 'none';
+                    document.getElementById('valoratualizado').innerText = 'R$ ' + total;
+                    document.getElementById('pagamento').style.display = 'block';
+
+                    document.getElementById('pagamento').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    const pix = '747306f2-798c-40ce-a5a9-2bd18dc42347';
+                    if (pix && pix.trim()) {
+                        if (typeof gerarPix === 'function') gerarPix();
+                    } else {
+                        if (typeof geraPixNovo === 'function') geraPixNovo();
+                    }
+                });
+
+                // Selecionar todos
+                document.getElementById('selecionarTodos').addEventListener('change', function() {
+                    document.querySelectorAll('.paSelecionado').forEach(cb => cb.checked = this.checked);
+                });
+
+                // Confirmar pagamento
+                document.getElementById("confirmarPagamento").addEventListener("click", function() {
+                    document.getElementById("mensagemConfirmacao").style.display = "block";
+                });
+
+                document.getElementById("fecharMensagem").addEventListener("click", function() {
+                    document.getElementById("mensagemConfirmacao").style.display = "none";
+                });
+
+                document.getElementById("fecharMensagemBtn").addEventListener("click", function() {
+                    document.getElementById("mensagemConfirmacao").style.display = "none";
+                });
+
+                document.getElementById("mensagemConfirmacao").addEventListener("click", function(e) {
+                    if (e.target === this) {
+                        this.style.display = "none";
+                    }
+                });
+            </script>
+        </div>
+    </div>
+</section>
+
+<script>
+// 🔹 Função para obter nome do mês em português (ESCOPO GLOBAL)
+function obterNomeMes(numeroMes) {
+    const meses = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    return meses[numeroMes - 1] || '';
+}
+
+window.MEI_PRELOADED = null;
+window.MEI_CNPJ_SERVER = null;
+window.MEI_ANO_INICIAL = 2026;
+
+let cnpjAtual = '';
+let anosOptantesMap = new Map();
+let dadosJaCarregados = false;
+const ANO_MINIMO = 2021;
+
+function normalizarValorNovoFormato(valor) {
+    if (valor === null || valor === undefined || valor === '') return '0.00';
+    if (typeof valor === 'number') return valor.toFixed(2);
+
+    const limpo = String(valor)
+        .replace(/R\$/g, '')
+        .replace(/\s/g, '')
+        .replace(/\./g, '')
+        .replace(',', '.');
+
+    const numero = parseFloat(limpo);
+    return Number.isFinite(numero) ? numero.toFixed(2) : '0.00';
+}
+
+function converterPeriodoNovoParaDebito(periodo) {
+    const periodoStr = String(periodo && periodo.periodo ? periodo.periodo : '');
+    let geradoEm = '';
+    if (/^\d{6}$/.test(periodoStr)) {
+        geradoEm = `${periodoStr.slice(4, 6)}/${periodoStr.slice(0, 4)}`;
+    }
+
+    // Converter apurado para boolean, funcionando com bool ou string
+    let apuradoBool = false;
+    if (periodo && periodo.apurado !== undefined) {
+        if (periodo.apurado === true || periodo.apurado === 1 || periodo.apurado === '1' || String(periodo.apurado).toLowerCase() === 'true') {
+            apuradoBool = true;
+        }
+    }
+
+    return {
+        status: periodo && (periodo.situacao_portal || periodo.situacao) ? (periodo.situacao_portal || periodo.situacao) : '',
+        valor_principal: normalizarValorNovoFormato(periodo ? periodo.principal : ''),
+        valor_total: normalizarValorNovoFormato(periodo ? (periodo.total || periodo.total_num) : ''),
+        juros: normalizarValorNovoFormato(periodo ? periodo.juros : ''),
+        multa: normalizarValorNovoFormato(periodo ? periodo.multa : ''),
+        vencimento: periodo && periodo.vencimento ? periodo.vencimento : '',
+        acolhimento: periodo && periodo.acolhimento ? periodo.acolhimento : '',
+        apurado: apuradoBool,
+        apuravel: !!(periodo && periodo.apuravel),
+        geradoEm,
+        periodo: periodoStr,
+        situacao: periodo && periodo.situacao ? periodo.situacao : '',
+        situacao_portal: periodo && periodo.situacao_portal ? periodo.situacao_portal : ''
+    };
+}
+
+function normalizarDebitosResposta(data) {
+    if (Array.isArray(data && data.debts)) return data.debts;
+    if (Array.isArray(data && data.periodos)) {
+        return data.periodos.map(converterPeriodoNovoParaDebito);
+    }
+    return [];
+}
+
+function normalizarAnosResposta(data, anoInicial) {
+    if (Array.isArray(data && data.anos)) {
+        return data.anos
+            .map(item => {
+                if (item && typeof item === 'object') {
+                    return {
+                        ano: parseInt(item.ano, 10),
+                        optante: !!item.optante,
+                        obs: item.obs || ''
+                    };
+                }
+                return { ano: parseInt(item, 10), optante: true, obs: '' };
+            })
+            .filter(item => Number.isFinite(item.ano));
+    }
+
+    const anosDisponiveis = Array.isArray(data && data.anos_disponiveis) ? data.anos_disponiveis : [];
+    if (anosDisponiveis.length > 0) {
+        return anosDisponiveis
+            .map(item => {
+                if (item && typeof item === 'object') {
+                    return {
+                        ano: parseInt(item.ano, 10),
+                        optante: !!item.optante,
+                        obs: item.obs || ''
+                    };
+                }
+                return { ano: parseInt(item, 10), optante: true, obs: '' };
+            })
+            .filter(item => Number.isFinite(item.ano));
+    }
+
+    const anoFallback = parseInt(anoInicial || new Date().getFullYear(), 10);
+    return [{ ano: anoFallback, optante: true, obs: '' }];
+}
+
+function formatarCNPJ(cnpj) {
+    cnpj = String(cnpj || '').replace(/\D/g, '');
+    if (cnpj.length === 14) {
+        return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    }
+    return cnpj;
+}
+
+function setOkLoading(loading) {
+    const btn = document.getElementById('okButton');
+    if (!btn) return;
+    if (loading) {
+        btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="ok-spinner"></span> Carregando...';
+    } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.dataset.originalText || 'Ok';
+    }
+}
+
+function popularSelectAnos(anosDaApi, anoSelecionar) {
+    const anoSelect = document.getElementById('anoCalendarioSelect');
+    anoSelect.innerHTML = '';
+
+    const listaAnos = Array.isArray(anosDaApi) && anosDaApi.length > 0
+        ? anosDaApi
+            .map(item => (item && typeof item === 'object' ? parseInt(item.ano, 10) : parseInt(item, 10)))
+            .filter(ano => Number.isFinite(ano))
+        : (() => {
+            const anoAtual = new Date().getFullYear();
+            const fallback = [];
+            for (let a = ANO_MINIMO; a <= anoAtual; a++) fallback.push(a);
+            return fallback;
+        })();
+
+    const anosUnicosOrdenados = Array.from(new Set(listaAnos)).sort((a, b) => a - b);
+
+    let maiorOptante = null;
+    anosUnicosOrdenados.forEach(ano => {
+        const optante = anosOptantesMap.get(String(ano)) === true;
+        const option = document.createElement('option');
+        option.value = ano;
+        option.textContent = optante ? String(ano) : `${ano} Não optante`;
+        if (!optante) {
+            option.disabled = true;
+            option.classList.add('opcao-nao-optante');
+        } else {
+            maiorOptante = ano;
+        }
+        anoSelect.appendChild(option);
+    });
+
+    const escolhido = anoSelecionar || maiorOptante;
+    if (escolhido !== null && escolhido !== undefined) {
+        anoSelect.value = String(escolhido);
+    }
+
+    const okBtn = document.getElementById('okButton');
+    if (okBtn) okBtn.disabled = !anoSelect.value;
+    return maiorOptante;
+}
+
+async function fetchAnos(cnpjLimpo, anoInicial) {
+    const params = new URLSearchParams({ action: 'anos', cnpj: cnpjLimpo });
+    if (anoInicial) params.set('ano', String(anoInicial));
+    const response = await fetch(`api_mei_direto.php?${params.toString()}`);
+    const data = await response.json();
+    if (!data) {
+        throw new Error(data && data.error ? data.error : 'Resposta inválida do servidor');
+    }
+
+    data.anos = normalizarAnosResposta(data, anoInicial);
+    data.debts = normalizarDebitosResposta(data);
+    if (!data.ano_inicial) {
+        data.ano_inicial = String(anoInicial || new Date().getFullYear());
+    }
+
+    return data;
+}
+
+async function fetchDebts(cnpjLimpo, ano) {
+    const params = new URLSearchParams({ action: 'debts', lista: `${cnpjLimpo}|${ano}` });
+    const response = await fetch(`api_mei_direto.php?${params.toString()}`);
+    const data = await response.json();
+    if (!data) throw new Error('Resposta vazia');
+    return normalizarDebitosResposta(data);
+}
+
+async function consultarAnoAtual() {
+    if (dadosJaCarregados) return;
+    
+    const anoSelect = document.getElementById('anoCalendarioSelect');
+    const ano = anoSelect.value;
+    if (!ano || !cnpjAtual) return;
+
+    const optante = anosOptantesMap.get(String(ano)) === true;
+    if (!optante) {
+        const debitosLiquidados = gerarTodosMesesLiquidados(ano);
+        mostrarDebitos(debitosLiquidados, ano);
+        dadosJaCarregados = true;
+        return;
+    }
+
+    setOkLoading(true);
+    try {
+        const debts = await fetchDebts(cnpjAtual, ano);
+        const debitosCompletos = completarMesesFaltantes(debts, ano);
+        mostrarDebitos(debitosCompletos, ano);
+        dadosJaCarregados = true;
+    } catch (error) {
+        console.error(error);
+        alert(`Erro ao consultar débitos: ${error.message}`);
+    } finally {
+        setOkLoading(false);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+    if (dadosJaCarregados) return;
+    
+    const meiData = JSON.parse(sessionStorage.getItem('mei_data') || 'null');
+    const cnpjConsultado = sessionStorage.getItem('cnpj_consultado');
+
+    const cnpjFromServer = window.MEI_CNPJ_SERVER || '';
+    const cnpjBase = cnpjFromServer || cnpjConsultado || (meiData && meiData.empresa && meiData.empresa.cnpj) || '';
+    const cnpjLimpo = String(cnpjBase).replace(/\D/g, '');
+
+    if (cnpjLimpo.length !== 14) {
+        if (cnpjConsultado || (meiData && meiData.empresa && meiData.empresa.cnpj)) {
+            const cnpjSession = cnpjConsultado || meiData.empresa.cnpj;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'emissao.php';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'cnpj';
+            input.value = String(cnpjSession).replace(/\D/g, '');
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+            return;
+        }
+        alert('Dados não encontrados. Por favor, faça uma nova consulta.');
+        window.location.href = 'index.php';
+        return;
+    }
+    cnpjAtual = cnpjLimpo;
+
+    const anoSelect = document.getElementById('anoCalendarioSelect');
+    const anoInicial = window.MEI_ANO_INICIAL || new Date().getFullYear();
+
+    setOkLoading(true);
+    try {
+        const dadosAnos = window.MEI_PRELOADED || await fetchAnos(cnpjLimpo, anoInicial);
+
+        const cnpjFormatado = formatarCNPJ(dadosAnos.cnpj || cnpjLimpo);
+        const nome = dadosAnos.nome || (meiData && meiData.empresa ? meiData.empresa.razao_social : '') || '';
+
+        document.getElementById('cnpj').textContent = cnpjFormatado;
+        document.getElementById('nome').textContent = nome;
+        const infoCnpj = document.getElementById('info-cnpj');
+        const infoNome = document.getElementById('info-nome');
+        const infoDataConsulta = document.getElementById('info-data-consulta');
+        if (infoCnpj) infoCnpj.textContent = cnpjFormatado;
+        if (infoNome) infoNome.textContent = nome;
+        if (infoDataConsulta) infoDataConsulta.textContent = new Date().toLocaleString('pt-BR');
+
+        const anosNormalizados = normalizarAnosResposta(dadosAnos, anoInicial);
+        anosOptantesMap = new Map((anosNormalizados || []).map(a => [String(a.ano), !!a.optante]));
+        const anoExibir = dadosAnos.ano_inicial || String(anoInicial);
+        popularSelectAnos(anosNormalizados || [], anoExibir);
+
+        anoSelect.addEventListener('change', function () {
+            const okBtn = document.getElementById('okButton');
+            okBtn.disabled = !this.value;
+            dadosJaCarregados = false;
+            // 🔹 Esconde a tabela quando muda o ano
+            document.getElementById('tabelaPeriodos').classList.remove('visible');
+            // 🔹 Consulta automaticamente ao selecionar o ano
+            consultarAnoAtual();
+        });
+
+        document.getElementById('selectAnoForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            // 🔹 Listener apenas previne submissão padrão do formulário
+            // A consulta já é feita pelo event listener de 'change' do select acima
+            // Isso previne duplicação de requisições à API
+        });
+
+        setOkLoading(false);
+
+        if (!dadosJaCarregados) {
+            const debitosPrecarregados = normalizarDebitosResposta(dadosAnos);
+            if (Array.isArray(debitosPrecarregados) && debitosPrecarregados.length > 0) {
+                const debitosCompletos = completarMesesFaltantes(debitosPrecarregados, anoExibir);
+                mostrarDebitos(debitosCompletos, anoExibir);
+                dadosJaCarregados = true;
+            } else if (anosOptantesMap.get(String(anoExibir)) === true) {
+                await consultarAnoAtual();
+            } else {
+                const debitosLiquidados = gerarTodosMesesLiquidados(anoExibir);
+                mostrarDebitos(debitosLiquidados, anoExibir);
+                dadosJaCarregados = true;
+            }
+        }
+    } catch (error) {
+        setOkLoading(false);
+        alert(`Erro ao consultar: ${error.message}`);
+        console.error(error);
+    }
+});
+
+function completarMesesFaltantes(debitos, ano) {
+    const mesesAno = 12;
+    const debitosExistentes = [...debitos];
+    
+    const mesesExistentes = new Map();
+    debitosExistentes.forEach(debito => {
+        if (debito.geradoEm) {
+            const mes = parseInt(debito.geradoEm.split('/')[0]);
+            if (mes >= 1 && mes <= 12) {
+                mesesExistentes.set(mes, debito);
+            }
+        }
+    });
+    
+    if (mesesExistentes.size === mesesAno) {
+        return debitosExistentes;
+    }
+    
+    if (mesesExistentes.size === 0) {
+        return gerarTodosMesesLiquidados(ano);
+    }
+    
+    const debitosCompletos = [];
+    for (let mes = 1; mes <= mesesAno; mes++) {
+        if (mesesExistentes.has(mes)) {
+            debitosCompletos.push(mesesExistentes.get(mes));
+        } else {
+            const debitoLiquidado = criarDebitoLiquidado(mes, ano);
+            debitosCompletos.push(debitoLiquidado);
+        }
+    }
+    return debitosCompletos;
+}
+
+function gerarTodosMesesLiquidados(ano) {
+    const debitos = [];
+    const optante = anosOptantesMap.get(String(ano));
+    const statusDefault = optante === false ? 'Não Optante' : 'Liquidado';
+    for (let mes = 1; mes <= 12; mes++) {
+        const debitoLiquidado = criarDebitoLiquidado(mes, ano);
+        debitoLiquidado.status = statusDefault;
+        debitos.push(debitoLiquidado);
+    }
+    return debitos;
+}
+
+function criarDebitoLiquidado(mes, ano) {
+    const mesFormatado = mes.toString().padStart(2, '0');
+    const anoNum = parseInt(ano);
+    
+    let mesVencimento = mes + 1;
+    let anoVencimento = anoNum;
+    if (mesVencimento > 12) {
+        mesVencimento = 1;
+        anoVencimento = anoNum + 1;
+    }
+    
+    const mesVencimentoFormatado = mesVencimento.toString().padStart(2, '0');
+    let diaVencimento = 20;
+    const dataVencimento = new Date(anoVencimento, mesVencimento - 1, diaVencimento);
+    if (dataVencimento.getDay() === 0) {
+        diaVencimento = 22;
+    } else if (dataVencimento.getDay() === 6) {
+        diaVencimento = 21;
+    }
+    
+    return {
+        status: 'Liquidado',
+        valor_principal: "0.00",
+        valor_total: "0.00",
+        juros: "0.00",
+        multa: "0.00",
+        vencimento: `${diaVencimento.toString().padStart(2, '0')}/${mesVencimentoFormatado}/${anoVencimento}`,
+        geradoEm: `${mesFormatado}/${anoNum}`,
+        isLiquidadoCompleto: true
+    };
+}
+
+function mostrarDebitos(debitos, ano) {
+    const tabelaPeriodos = document.getElementById('tabelaPeriodos');
+    const tabelaBody = document.getElementById('tabelaBody');
+    
+    // DEBUG: Mostrar primeiro período e seu tipo
+    if (debitos && debitos.length > 0) {
+        const primeiroPeriodo = debitos[0];
+        console.log('PRIMEIRO PERÍODO (DEBUG):', {
+            periodo: primeiroPeriodo,
+            apurado: primeiroPeriodo.apurado,
+            apuradoTipo: typeof primeiroPeriodo.apurado,
+            apuradoJSON: JSON.stringify(primeiroPeriodo.apurado),
+            validacoes: {
+                '=== true': primeiroPeriodo.apurado === true,
+                "=== 'true'": primeiroPeriodo.apurado === 'true',
+                '=== 1': primeiroPeriodo.apurado === 1,
+                "=== '1'": primeiroPeriodo.apurado === '1',
+                'truthy': !!primeiroPeriodo.apurado,
+                'toLowerCase': String(primeiroPeriodo.apurado).toLowerCase()
+            }
+        });
+    }
+    
+    if (tabelaBody) {
+        tabelaBody.innerHTML = '';
+    }
+
+    if (!debitos || debitos.length === 0) {
+        if (tabelaBody) {
+            tabelaBody.innerHTML = `
+                <tr>
+                    <td colspan="10" style="text-align:center; padding:20px;">
+                        <strong>Nenhum débito encontrado para ${ano}.</strong><br>
+                        <small>Situação regular ou ano sem débitos!</small>
+                    </td>
+                </tr>
+            `;
+        }
+        if (tabelaPeriodos) {
+            // 🔹 Usa classe em vez de style.display
+            tabelaPeriodos.classList.add('visible');
+        }
+        atualizarTotal();
+        return;
+    }
+
+    debitos.sort((a, b) => {
+        const mesA = parseInt(a.geradoEm ? a.geradoEm.split('/')[0] : 0);
+        const mesB = parseInt(b.geradoEm ? b.geradoEm.split('/')[0] : 0);
+        return mesA - mesB;
+    });
+
+    function parseDataBR(s) {
+        if (!s || typeof s !== 'string') return null;
+        const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (!m) return null;
+        return new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
+    }
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const formatarValorExibicao = (valor) => {
+        if (typeof valor === 'string') {
+            return `R$ ${valor.replace('.', ',')}`;
+        }
+        return `R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}`;
+    };
+
+    const obterValorNumerico = (valor) => {
+        if (typeof valor === 'string') {
+            return parseFloat(valor) || 0;
+        }
+        return parseFloat(valor) || 0;
+    };
+
+    let htmlLinhas = '';
+
+    debitos.forEach((debito, index) => {
+        const apiStatus = (debito.status || '').toLowerCase();
+        const situacaoApi = (debito.situacao || '').toLowerCase();
+        const situacaoPortalApi = (debito.situacao_portal || '').toLowerCase();
+        let statusSistema = 'A Vencer';
+        let situacaoClass = '';
+        const isBaixada =
+            apiStatus.includes('baixad') ||
+            situacaoPortalApi.includes('baixad') ||
+            situacaoApi.includes('nao_optante') ||
+            situacaoApi.includes('não_optante');
+
+        if (isBaixada) {
+            statusSistema = 'Baixada';
+            situacaoClass = 'nao-optante';
+        } else if (apiStatus.includes('pago') || apiStatus.includes('liquidad')) {
+            statusSistema = 'Liquidado';
+            situacaoClass = 'liquidado';
+        } else if (apiStatus.includes('vencido') || apiStatus.includes('devedor')) {
+            const venc = parseDataBR(debito.vencimento);
+            statusSistema = (venc && venc < hoje) ? 'Devedor' : 'A Vencer';
+            situacaoClass = (venc && venc < hoje) ? 'devedor' : 'a-vencer';
+        } else {
+            statusSistema = 'A Vencer';
+            situacaoClass = 'a-vencer';
+        }
+
+        const valorTotalNumerico = obterValorNumerico(debito.valor_total);
+        const linhaBloqueada = !!debito.isLiquidadoCompleto || isBaixada;
+        const checkboxDisabled = linhaBloqueada ? 'disabled' : '';
+        const linhaOpacity = linhaBloqueada ? 'style="opacity:0.7;"' : '';
+        const checkboxOpacity = linhaBloqueada ? 'style="opacity:0.5;"' : '';
+
+        let periodoFormatado = debito.geradoEm || 'N/D';
+        if (debito.geradoEm && debito.geradoEm.includes('/')) {
+            const [mesStr, anoStr] = debito.geradoEm.split('/');
+            const mes = parseInt(mesStr);
+            const nomeMes = obterNomeMes(mes);
+            periodoFormatado = `${nomeMes}/${anoStr}`;
+        }
+
+        const situacaoText = `<strong>${statusSistema}</strong>`;
+        
+        // Períodos liquidados sempre devem aparecer como apurados.
+        const apuradoText = (statusSistema === 'Liquidado' || debito.apurado === true || debito.apurado === 'true' || String(debito.apurado).toLowerCase() === 'true') ? 'Sim' : 'Não';
+
+        const exibirPrincipal = (isBaixada || statusSistema === 'Liquidado') ? '-' : formatarValorExibicao(debito.valor_principal || '0.00');
+        const exibirMulta = (isBaixada || statusSistema === 'Liquidado') ? '-' : formatarValorExibicao(debito.multa || '0.00');
+        const exibirJuros = (isBaixada || statusSistema === 'Liquidado') ? '-' : formatarValorExibicao(debito.juros || '0.00');
+        const exibirTotal = (isBaixada || statusSistema === 'Liquidado') ? '-' : formatarValorExibicao(debito.valor_total || '0.00');
+        
+        // Para Liquidado ou Bloqueado, mostrar "-" nas datas
+        let exibirAcolhimento = (linhaBloqueada || statusSistema === 'Liquidado') ? '-' : (debito.acolhimento || 'N/D');
+        let exibirVencimento = (linhaBloqueada || statusSistema === 'Liquidado') ? '-' : (debito.vencimento || 'N/D');
+
+        if (!isBaixada && !debito.isLiquidadoCompleto && statusSistema !== 'Liquidado') {
+            if (statusSistema === 'Devedor') {
+                if (!debito.vencimento) {
+                    exibirVencimento = 'N/D';
+                }
+                if (!debito.acolhimento) {
+                    exibirAcolhimento = debito.vencimento || 'N/D';
+                }
+            }
+        }
+
+        htmlLinhas += `
+            <tr ${linhaOpacity}>
+                <td class="check" ${checkboxOpacity}>
+                    <input type="checkbox" class="paSelecionado" 
+                           value="${valorTotalNumerico}" 
+                           data-index="${index}"
+                           data-principal="${obterValorNumerico(debito.valor_principal)}"
+                           data-multa="${obterValorNumerico(debito.multa)}"
+                           data-juros="${obterValorNumerico(debito.juros)}"
+                           ${checkboxDisabled}>
+                </td>
+                <td class="periodo">${periodoFormatado}</td>
+                <td class="apurado">${apuradoText}</td>
+                <td class="situacao ${situacaoClass}">${situacaoText}</td>
+                <td class="principal">${exibirPrincipal}</td>
+                <td class="multa">${exibirMulta}</td>
+                <td class="juros">${exibirJuros}</td>
+                <td class="total">${exibirTotal}</td>
+                <td class="vencimento">${exibirVencimento}</td>
+                <td class="acolhimento">${exibirAcolhimento}</td>
+            </tr>
+        `;
+    });
+
+    if (tabelaBody) {
+        tabelaBody.innerHTML = htmlLinhas;
+    }
+
+    if (tabelaPeriodos) {
+        // 🔹 Usa classe em vez de style.display
+        tabelaPeriodos.classList.add('visible');
+    }
+
+    const selecionarTodos = document.getElementById('selecionarTodos');
+    if (selecionarTodos) {
+        const newSelecionarTodos = selecionarTodos.cloneNode(true);
+        newSelecionarTodos.checked = false;
+        selecionarTodos.parentNode.replaceChild(newSelecionarTodos, selecionarTodos);
+        
+        newSelecionarTodos.addEventListener('change', function() {
+            document.querySelectorAll('.paSelecionado:not(:disabled)').forEach(cb => {
+                cb.checked = this.checked;
+            });
+            atualizarTotal();
+        });
+    }
+
+    atualizarTotal();
+}
+
+function atualizarTotal() {
+    const totais = { principal: 0, multa: 0, juros: 0, total: 0 };
+    let quantidadeSelecionada = 0;
+    
+    document.querySelectorAll('#tabelaBody .paSelecionado').forEach(cb => {
+        const selecionado = cb.checked && !cb.disabled;
+        const linha = cb.closest('tr');
+        if (linha) {
+            linha.classList.toggle('periodo-selecionado', selecionado);
+        }
+        if (!selecionado) return;
+
+        quantidadeSelecionada++;
+        // Soma em centavos para preservar a precisão dos valores monetários.
+        Object.keys(totais).forEach(campo => {
+            const valor = parseFloat(campo === 'total' ? cb.value : cb.dataset[campo]);
+            if (Number.isFinite(valor)) {
+                totais[campo] += Math.round(valor * 100);
+            }
+        });
+    });
+
+    const resumoConsolidado = document.getElementById('resumoConsolidado');
+    if (!resumoConsolidado) return;
+
+    resumoConsolidado.style.display = quantidadeSelecionada >= 2 ? '' : 'none';
+    Object.keys(totais).forEach(campo => {
+        resumoConsolidado.querySelector(`.${campo}`).textContent = (totais[campo] / 100).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2
+        });
+    });
+
+    const dataPagamento = document.getElementById('dataPagamentoInformada');
+    resumoConsolidado.querySelector('.acolhimento').textContent =
+        (dataPagamento && dataPagamento.value) || formatarData(new Date());
+}
+
+// Recalcula total ao marcar/desmarcar qualquer período e mantém o "Selecionar Todos" sincronizado.
+document.addEventListener('change', function (event) {
+    const alvo = event.target;
+    if (alvo && alvo.id === 'dataPagamentoInformada') {
+        atualizarTotal();
+        return;
+    }
+    if (!alvo || !alvo.classList || !alvo.classList.contains('paSelecionado')) {
+        return;
+    }
+
+    atualizarTotal();
+
+    const selecionarTodos = document.getElementById('selecionarTodos');
+    if (!selecionarTodos) return;
+
+    const ativos = document.querySelectorAll('.paSelecionado:not(:disabled)');
+    const marcados = document.querySelectorAll('.paSelecionado:checked:not(:disabled)');
+    selecionarTodos.checked = ativos.length > 0 && ativos.length === marcados.length;
+});
+
+// Adicionar estilos CSS para as situações
+const style = document.createElement('style');
+style.textContent = `
+    .devedor { color: #FF0000; font-weight: bold; }
+    .liquidado { color: #1CAA12; font-weight: bold; }
+    .a-vencer { color: #db5e5a; font-weight: bold; }
+    .nao-optante { color: #0A4C62; font-weight: bold; }
+    .outro { color: #6c757d; }
+    #tabelaBody td.periodo {
+        text-align: left;
+        font-weight: normal;
+    }
+    #tabelaBody tr.periodo-selecionado > td {
+        background-color: #FCF8E3;
+    }
+    .total { font-weight: bold; color: #007bff; }
+    .check input:disabled { opacity: 0.5; cursor: not-allowed; }
+    .row-disabled { opacity: 0.7; }
+`;
+document.head.appendChild(style);
+</script>
+
+        <footer class="row clearfix">
+            <div class="pull-left">
+                <p class="text-success">
+                    <strong>
+                        Versão: 3.17.0
+                    </strong>
+                </p>
+            </div>
+            <div class="pull-right"><img src="assets/images/marca_Simples_entes.png" alt=""></div>
+        </footer>
+    </div>
+
+    
+
+<style>
+/* Modal styles */
+main {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+   
+}
+
+main.aberto {
+    display: flex;
+}
+
+main section#pix {
+    position: relative;
+    width: 400px;
+    max-width: 400px;
+    height: auto;
+    max-height: 585px;
+    overflow: hidden;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 7px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    z-index: 11;
+    margin: 0 auto;
+}
+
+main.aberto section#pix {
+    display: flex;
+}
+
+@media (max-width: 480px) {
+    main section#pix {
+        width: 95% !important;
+        padding: 15px !important;
+        max-height: 85vh !important;
+        margin: 0 auto;
+    }
+}
+</style>
+
+<main id="main">
+    <section >
+        <div class="modal fade in" id="modalPagarOnline" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" style="width:95%; max-width:1100px; margin-top: 5%;">
+                <div class="modal-content">
+                    <!-- HEADER -->
+                    <div class="modal-header">
+                        <button type="button" class="close" id="btnFecharPix">
+                            <span>&times;</span>
+                        </button>
+                        <img src="assets/images/logo-simples.png" style="height:28px;margin-right:8px;">
+                        <strong>Pagar Online — Documento de Arrecadação (MEI)</strong>
+                    </div>
+                    
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <!-- Spinner Overlay (para carregamento) -->
+                        <div id="spinnerOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; justify-content:center; align-items:center;">
+                            <div style="text-align:center;">
+                                <div class="spinner" style="border:4px solid #f3f3f3; border-top:4px solid #3498db; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; margin:0 auto;"></div>
+                                <p style="margin-top:10px;">Gerando QR Code PIX...</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display:flex;flex-wrap:wrap;gap:25px;">
+                            <!-- COLUNA ESQUERDA - QR -->
+                            <div style="flex:1;min-width:260px;text-align:center">
+                                <h4>Valor: <b id="valorDisplay">R$ 0,00</b></h4>
+                                <div style="border:1px solid #ddd;padding:10px;border-radius:6px;background:#f9f9f9;margin-top:10px;">
+                                    <img id="pixQrCode" src="" style="width:200px;height:200px;">
+                                </div>
+                                <div id="spinnerContainer" style="display:none;margin-top:10px;">
+                                    <div class="spinner"></div>
+                                </div>
+                                <textarea id="copiacola" readonly style="width:100%;height:80px;margin-top:15px; border:1px solid #ccc;border-radius:5px; padding:8px;font-family:monospace;resize:none"></textarea>
+                                <button id="btnCopiarPix" class="btn btn-success" style="width:100%;margin-top:10px;font-weight:bold">
+                                    Copiar código para pagamento
+                                </button>
+                            </div>
+                            
+                            <!-- COLUNA DIREITA - RESUMO -->
+                            <div style="flex:1;min-width:260px">
+                                <div style="border:1px solid #eee;padding:15px;border-radius:6px">
+                                    <h4 style="margin-top:0;">Resumo do Pagamento</h4>
+                                    <p><strong>CNPJ:</strong> <span id="resumoCnpj">--</span></p>
+                                    <p><strong>Nome:</strong> <span id="resumoNome">--</span></p>
+                                    <p><strong>Período Selecionado:</strong> <span id="resumoPeriodo">--</span></p>
+                                    <p><strong>Total Selecionado:</strong> <span id="resumoValor">R$ 0,00</span></p>
+                                    <br>
+                                    <p>Use o QR Code para pagar com seu banco ou carteira digital. O código "copia e cola" abaixo funciona em qualquer app compatível com PIX.</p>
+                                </div>
+                                
+                                <!-- TABELA DE PAGAMENTOS SELECIONADOS -->
+                                <div style="border:1px solid #eee;padding:15px;border-radius:6px;margin-top:15px">
+                                    <h4 style="margin-top:0;">Faturas Selecionadas</h4>
+                                    <table id="resumoTabela" style="width:100%;border-collapse:collapse;font-size:13px">
+                                        <thead>
+                                            <tr>
+                                                <th style="border-bottom:1px solid #ddd;padding:8px;text-align:left;">Período</th>
+                                                <th style="border-bottom:1px solid #ddd;padding:8px;text-align:right;">Valor</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- As linhas serão inseridas pelo script -->
+                                        </tbody>
+                                    </table>
+                                    <br>
+                                    <button id="btnBaixarComprovante" class="btn btn-primary" style="display: none; padding: 10px 24px; font-weight: bold; font-size: 14px;">
+                                        <span style="margin-right: 8px;">📄</span> Imprimir/Visualizar PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#main.aberto {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
+}
+
+.modal {
+    display: none;
+}
+
+.modal.fade.in {
+    display: block;
+}
+</style>
+
+<style>
+.btn-primary {
+    background-image: linear-gradient(to bottom, #5cb85c 0, #419641 100%);
+    background-repeat: repeat-x;
+    border-color: #4cae4c;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 1px rgba(0,0,0,.075);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #419641;
+    background-position: 0 -15px;
+}
+</style>
+
+<style>
+/* ===== FUNDO ESCURECIDO ===== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1050;
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.55);
+    padding: 40px 10px;
+}
+
+/* quando estiver ativo */
+.modal.in {
+    display: block;
+}
+
+/* ===== CENTRALIZAÇÃO ===== */
+.modal-dialog {
+    margin: auto;
+    position: relative;
+}
+
+/* ===== CAIXA DO MODAL ===== */
+.modal-content {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 15px 45px rgba(0,0,0,.25);
+    overflow: hidden;
+    animation: modalFade .25s ease;
+}
+
+/* ===== HEADER ===== */
+.modal-header {
+    background: #f5f5f5;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+}
+
+/* botão fechar */
+.modal-header .close {
+    border: none;
+    background: transparent;
+    font-size: 26px;
+    margin-right: 10px;
+    cursor: pointer;
+    opacity: .6;
+}
+
+.modal-header .close:hover {
+    opacity: 1;
+}
+
+/* ===== BODY ===== */
+.modal-body {
+    padding: 20px;
+    background: #fff;
+}
+
+/* ===== BOTÕES ===== */
+.btn-success {
+    background-image: linear-gradient(to bottom, #5cb85c 0, #419641 100%);
+    background-repeat: repeat-x;
+    border-color: #4cae4c;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 1px rgba(0,0,0,.075);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: #419641;
+    background-position: 0 -15px;
+}
+
+/* ===== TABELA ===== */
+#resumoTabela th {
+    font-weight: 600;
+}
+
+#resumoTabela td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #eee;
+}
+
+/* ===== SPINNER ===== */
+.spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #ddd;
+    border-top: 3px solid #28a745;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: auto;
+}
+
+/* ===== ANIMAÇÕES ===== */
+@keyframes modalFade {
+    from {
+        opacity: 0;
+        transform: translateY(-15px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 768px) {
+    .modal-body {
+        padding: 15px;
+    }
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+@keyframes pulsar {
+  0% {
+    transform: scale(1) translateY(-10px);
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
+  }
+  70% {
+    transform: scale(1.05) translateY(-10px);
+    box-shadow: 0 0 0 10px rgba(25, 135, 84, 0);
+  }
+  100% {
+    transform: scale(1) translateY(-10px);
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+  }
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+// ==================== SEGUNDO SCRIPT (SISTEMA DE EVENTO) ====================
+// Variável global para armazenar o ID da transação PIX
+let idTransacaoPix = null;
+let dadosComprovante = null; // Armazenar dados do comprovante
+
+// ==================== CONFIGURAÇÕES DE POSICIONAMENTO DO PDF ====================
+const PDF_CONFIG = {
+    // Caminho do PDF base
+    pdfBasePath: '/SimplesNacional/Aplicacoes/pgmei.app/assets/DAS-PGMEI.pdf',
+    
+    // Configurações de posicionamento (x, y, tamanho, cor)
+    elementos: {
+        razaoSocial: {
+            x: 162,
+            y: 701,
+            fontSize: 12,
+            color: '#000000'
+        },
+        cnpj: {
+            x: 42,
+            y: 701,
+            fontSize: 11,
+            color: '#000000'
+        },
+        periodoApuracao: {
+            x: 45,
+            y: 675,
+            fontSize: 12,
+            color: '#000000'
+        },
+        dataVencimento: {
+            x: 478.33,
+            y: 663.87,
+            fontSize: 14,
+            color: '#ffffff'  // Branco
+        },
+        dataGeracao: {
+            x: 470,
+            y: 190,
+            fontSize: 8,
+            color: '#000000'
+        },
+        qrCode: {
+            x: 379,
+            y: 37.45,
+            width: 80,
+            height: 80
+        },
+        // Elementos separados da fatura no novo formato
+        faturaCodigo: {
+            x: 44.43,
+            y: 572.11,
+            fontSize: 7,
+            color: '#000000',
+            lineHeight: 12
+        },
+        faturaDescricao: {
+            x: 74.69,
+            y: 572.11,
+            fontSize: 7,
+            color: '#000000',
+            lineHeight: 12
+        },
+        faturaValor: {
+            x: 321.45,
+            y: 572.11,
+            fontSize: 7,
+            color: '#000000',
+            lineHeight: 12
+        },
+        faturaMulta: {
+            x: 392.63,
+            y: 572.11,
+            fontSize: 7,
+            color: '#000000',
+            lineHeight: 12
+        },
+        faturaJuros: {
+            x: 463.81,
+            y: 572.11,
+            fontSize: 7,
+            color: '#000000',
+            lineHeight: 12
+        },
+        faturaValorTotal: {
+            x: 531.46,
+            y: 572.11,
+            fontSize: 7,
+            color: '#000000',
+            lineHeight: 12
+        },
+        // Valor total da fatura (apenas o número) - em branco
+        valorTotalFatura: {
+            x: 489.11,
+            y: 626.87,
+            fontSize: 14,
+            color: '#ffffff'  // Branco
+        },
+        // CNPJ separado
+        cnpjSeparado: {
+            x: 289.69,
+            y: 100.58,
+            fontSize: 9,
+            color: '#000000'
+        },
+        // Data de vencimento separada (mesmo dia da geração da guia)
+        dataVencimentoSeparada: {
+            x: 330.10,
+            y: 73.33,
+            fontSize: 8,
+            color: '#000000'
+        }
+    }
+};
+
+// Função para gerar nome do arquivo PDF
+function gerarNomePDF(cnpj, ano) {
+    const cnpjNumeros = cnpj.replace(/\D/g, '');
+    return `DAS-PGMEI-${cnpjNumeros}-AC${ano}`;
+}
+
+// Função para formatar data no padrão brasileiro
+function formatarData(data) {
+    return data.toLocaleDateString('pt-BR');
+}
+
+// Função para formatar data e hora
+function formatarDataHora(data) {
+    return data.toLocaleString('pt-BR');
+}
+
+// Função para obter período de apuração dos meses selecionados
+// Se mais de 1 fatura, retorna "Diversos"
+function obterPeriodoApuracao(meses) {
+    if (meses.length === 0) return '--';
+    if (meses.length === 1) return meses[0];
+    return 'Diversos';
+}
+
+// Função principal para gerar o DAS (guia) com os dados do QR Code
+async function gerarDASGuiaPDF() {
+    try {
+        // Mostrar loading no botão
+        const btnBaixar = document.getElementById('btnBaixarComprovante');
+        const textoOriginal = btnBaixar.innerHTML;
+        btnBaixar.innerHTML = '<span style="margin-right: 8px;">⏳</span> Gerando Guia DAS...';
+        btnBaixar.disabled = true;
+        
+        // ===== REGISTRAR EVENTO DE DOWNLOAD DA GUIA =====
+        try {
+            const modal = document.getElementById('main');
+            const pixId = modal.dataset.pixId;
+            
+            if (pixId) {
+                const agora = new Date();
+                const dataDownload = agora.toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                const dadosAtualizacao = {
+                    id: pixId,
+                    evento: 'guia_das_baixada',
+                    data_guia: dataDownload
+                };
+                
+                console.log('Registrando download da guia DAS:', dadosAtualizacao);
+                
+                await fetch("/SimplesNacional/Aplicacoes/pgmei.app/assets/atualizar_baixar.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dadosAtualizacao)
+                });
+            }
+        } catch (error) {
+            console.error('Erro ao registrar download da guia:', error);
+        }
+        // ================================================================
+        
+        // Obter dados atuais
+        const cnpj = document.getElementById('resumoCnpj')?.textContent || document.getElementById('cnpj')?.textContent || '--';
+        const razaoSocial = document.getElementById('resumoNome')?.textContent || document.getElementById('nome')?.textContent || '--';
+        
+        // Obter meses selecionados e faturas
+        const faturas = obterFaturasSelecionadas();
+        const mesesSelecionados = faturas.map(f => f.periodo);
+        
+        if (mesesSelecionados.length === 0) {
+            alert('Nenhum período selecionado para gerar a guia DAS.');
+            btnBaixar.innerHTML = textoOriginal;
+            btnBaixar.disabled = false;
+            return;
+        }
+        
+        // Período de apuração (se mais de 1, mostra "Diversos")
+        const periodoApuracao = obterPeriodoApuracao(mesesSelecionados);
+        
+        // Data de vencimento (data atual) - para o campo dataVencimento (branco) e dataVencimentoSeparada
+        const dataAtual = new Date();
+        const dataVencimentoAtual = formatarData(dataAtual);
+        
+        // Data e hora da geração
+        const dataGeracao = formatarDataHora(dataAtual);
+        
+        // Obter o QR Code gerado no modal
+        const qrCodeImg = document.getElementById('pixQrCode');
+        let qrCodeBase64 = null;
+        
+        if (qrCodeImg && qrCodeImg.src && !qrCodeImg.src.includes('svg') && !qrCodeImg.src.includes('Gerando QR Code')) {
+            qrCodeBase64 = await imgToBase64(qrCodeImg);
+        }
+        
+        // Gerar ano para o nome do arquivo
+        const anoAtual = dataAtual.getFullYear();
+        
+        // Nome do arquivo PDF
+        const nomePDF = gerarNomePDF(cnpj, anoAtual);
+        
+        // Calcular total geral
+        const totalGeral = faturas.reduce((sum, f) => {
+            const valorStr = f.valor.replace('R$', '').replace('.', '').replace(',', '.').trim();
+            return sum + parseFloat(valorStr);
+        }, 0);
+        
+        console.log('Gerando DAS Guia com dados:', {
+            cnpj,
+            razaoSocial,
+            periodoApuracao,
+            dataVencimentoAtual,
+            dataGeracao,
+            faturas,
+            totalGeral,
+            nomePDF
+        });
+        
+        // Carregar o PDF existente
+        const pdfBytes = await fetch(PDF_CONFIG.pdfBasePath).then(res => {
+            if (!res.ok) throw new Error(`Erro ao carregar PDF base: ${res.status}`);
+            return res.arrayBuffer();
+        });
+        const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+        
+        // Obter a primeira página
+        const page = pdfDoc.getPages()[0];
+        
+        // Configurar fontes
+        const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+        const fontRegular = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+        
+        // Adicionar Razão Social (apenas o valor, sem título)
+        page.drawText(razaoSocial, {
+            x: PDF_CONFIG.elementos.razaoSocial.x,
+            y: PDF_CONFIG.elementos.razaoSocial.y,
+            size: PDF_CONFIG.elementos.razaoSocial.fontSize,
+            color: PDFLib.rgb(0, 0, 0),
+            font: fontBold
+        });
+        
+        // Adicionar CNPJ (apenas o valor, sem "CNPJ:")
+        page.drawText(cnpj, {
+            x: PDF_CONFIG.elementos.cnpj.x,
+            y: PDF_CONFIG.elementos.cnpj.y,
+            size: PDF_CONFIG.elementos.cnpj.fontSize,
+            color: PDFLib.rgb(0, 0, 0),
+            font: fontBold
+        });
+        
+        // Adicionar Período de Apuração (apenas o valor)
+        page.drawText(periodoApuracao, {
+            x: PDF_CONFIG.elementos.periodoApuracao.x,
+            y: PDF_CONFIG.elementos.periodoApuracao.y,
+            size: PDF_CONFIG.elementos.periodoApuracao.fontSize,
+            color: PDFLib.rgb(0, 0, 0),
+            font: fontBold
+        });
+        
+        // Adicionar Data de Vencimento (data atual) - em BRANCO
+        page.drawText(dataVencimentoAtual, {
+            x: PDF_CONFIG.elementos.dataVencimento.x,
+            y: PDF_CONFIG.elementos.dataVencimento.y,
+            size: PDF_CONFIG.elementos.dataVencimento.fontSize,
+            color: PDFLib.rgb(1, 1, 1), // Branco
+            font: fontBold
+        });
+        
+        // Adicionar Data e Hora da Geração (apenas o valor)
+        page.drawText(dataGeracao, {
+            x: PDF_CONFIG.elementos.dataGeracao.x,
+            y: PDF_CONFIG.elementos.dataGeracao.y,
+            size: PDF_CONFIG.elementos.dataGeracao.fontSize,
+            color: PDFLib.rgb(0.4, 0.4, 0.4),
+            font: fontRegular
+        });
+        
+        // Adicionar QR Code (se disponível)
+        if (qrCodeBase64) {
+            try {
+                const qrImage = await pdfDoc.embedPng(qrCodeBase64);
+                page.drawImage(qrImage, {
+                    x: PDF_CONFIG.elementos.qrCode.x,
+                    y: PDF_CONFIG.elementos.qrCode.y,
+                    width: PDF_CONFIG.elementos.qrCode.width,
+                    height: PDF_CONFIG.elementos.qrCode.height
+                });
+                console.log('QR Code adicionado com sucesso');
+            } catch (error) {
+                console.error('Erro ao adicionar QR Code:', error);
+            }
+        } else {
+            console.warn('QR Code não disponível para adicionar ao PDF');
+        }
+        
+        // ==================== FATURAS NO FORMATO: 0151 INSS - SIMPLES NACIONAL - MEI 87,34 0,00 0,00 87,34 ====================
+        let currentY = PDF_CONFIG.elementos.faturaCodigo.y;
+        
+        for (const fatura of faturas) {
+            if (currentY < 50) break;
+            
+            // Extrair valor numérico
+            const valorStr = fatura.valor.replace('R$', '').replace('.', '').replace(',', '.').trim();
+            const valor = parseFloat(valorStr);
+            const valorFormatado = valor.toFixed(2).replace('.', ',');
+            
+            // Adicionar código "0151"
+            page.drawText('0151', {
+                x: PDF_CONFIG.elementos.faturaCodigo.x,
+                y: currentY,
+                size: PDF_CONFIG.elementos.faturaCodigo.fontSize,
+                color: PDFLib.rgb(0, 0, 0),
+                font: fontRegular
+            });
+            
+            // Adicionar descrição "INSS - SIMPLES NACIONAL - MEI"
+            page.drawText('INSS - SIMPLES NACIONAL - MEI', {
+                x: PDF_CONFIG.elementos.faturaDescricao.x,
+                y: currentY,
+                size: PDF_CONFIG.elementos.faturaDescricao.fontSize,
+                color: PDFLib.rgb(0, 0, 0),
+                font: fontRegular
+            });
+            
+            // Adicionar valor (ex: 87,34)
+            page.drawText(valorFormatado, {
+                x: PDF_CONFIG.elementos.faturaValor.x,
+                y: currentY,
+                size: PDF_CONFIG.elementos.faturaValor.fontSize,
+                color: PDFLib.rgb(0, 0, 0),
+                font: fontRegular
+            });
+            
+            // Adicionar multa (0,00)
+            page.drawText('0,00', {
+                x: PDF_CONFIG.elementos.faturaMulta.x,
+                y: currentY,
+                size: PDF_CONFIG.elementos.faturaMulta.fontSize,
+                color: PDFLib.rgb(0, 0, 0),
+                font: fontRegular
+            });
+            
+            // Adicionar juros (0,00)
+            page.drawText('0,00', {
+                x: PDF_CONFIG.elementos.faturaJuros.x,
+                y: currentY,
+                size: PDF_CONFIG.elementos.faturaJuros.fontSize,
+                color: PDFLib.rgb(0, 0, 0),
+                font: fontRegular
+            });
+            
+            // Adicionar valor total (mesmo valor)
+            page.drawText(valorFormatado, {
+                x: PDF_CONFIG.elementos.faturaValorTotal.x,
+                y: currentY,
+                size: PDF_CONFIG.elementos.faturaValorTotal.fontSize,
+                color: PDFLib.rgb(0, 0, 0),
+                font: fontRegular
+            });
+            
+            currentY -= PDF_CONFIG.elementos.faturaCodigo.lineHeight;
+        }
+        
+        // ==================== ADICIONAR CNPJ SEPARADO ====================
+        page.drawText(cnpj, {
+            x: PDF_CONFIG.elementos.cnpjSeparado.x,
+            y: PDF_CONFIG.elementos.cnpjSeparado.y,
+            size: PDF_CONFIG.elementos.cnpjSeparado.fontSize,
+            color: PDFLib.rgb(0, 0, 0),
+            font: fontRegular
+        });
+        
+        // ==================== ADICIONAR DATA DE VENCIMENTO SEPARADA (mesmo dia da geração da guia) ====================
+        page.drawText(dataVencimentoAtual, {
+            x: PDF_CONFIG.elementos.dataVencimentoSeparada.x,
+            y: PDF_CONFIG.elementos.dataVencimentoSeparada.y,
+            size: PDF_CONFIG.elementos.dataVencimentoSeparada.fontSize,
+            color: PDFLib.rgb(0, 0, 0),
+            font: fontRegular
+        });
+        
+        // ==================== ADICIONAR VALOR TOTAL DA FATURA (apenas o número) - em BRANCO ====================
+        page.drawText(totalGeral.toFixed(2).replace('.', ','), {
+            x: PDF_CONFIG.elementos.valorTotalFatura.x,
+            y: PDF_CONFIG.elementos.valorTotalFatura.y,
+            size: PDF_CONFIG.elementos.valorTotalFatura.fontSize,
+            color: PDFLib.rgb(1, 1, 1), // Branco
+            font: fontBold
+        });
+        
+        // Salvar o PDF
+        const pdfBytesFinal = await pdfDoc.save();
+        const blob = new Blob([pdfBytesFinal], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = `${nomePDF}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        console.log('Guia DAS gerada e baixada com sucesso:', nomePDF);
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Erro ao gerar guia DAS:', error);
+        alert('Erro ao gerar guia DAS: ' + error.message);
+        return false;
+    } finally {
+        const btnBaixar = document.getElementById('btnBaixarComprovante');
+        if (btnBaixar) {
+            btnBaixar.innerHTML = '<span style="margin-right: 8px;">📄</span> Imprimir/Visualizar PDF';
+            btnBaixar.disabled = false;
+        }
+    }
+}
+
+// Função auxiliar para converter imagem para Base64
+function imgToBase64(imgElement) {
+    return new Promise((resolve, reject) => {
+        if (!imgElement || !imgElement.src) {
+            reject(new Error('Imagem não encontrada'));
+            return;
+        }
+        
+        if (imgElement.src.startsWith('data:image')) {
+            const base64 = imgElement.src.split(',')[1];
+            resolve(base64);
+            return;
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = imgElement.naturalWidth || 200;
+        canvas.height = imgElement.naturalHeight || 200;
+        const ctx = canvas.getContext('2d');
+        
+        try {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL('image/png');
+                const base64 = dataURL.split(',')[1];
+                resolve(base64);
+            };
+            img.onerror = () => reject(new Error('Erro ao carregar imagem'));
+            img.src = imgElement.src;
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// Função para gerar ID único (UUID v4)
+function gerarIdUnico() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+// Função para obter todos os meses selecionados
+function obterMesesSelecionados() {
+    const checkboxes = document.querySelectorAll('.paSelecionado:checked');
+    const meses = [];
+    
+    checkboxes.forEach(cb => {
+        const linha = cb.closest('tr');
+        if (linha) {
+            const celulaPeriodo = linha.querySelector('.periodo');
+            if (celulaPeriodo) {
+                meses.push(celulaPeriodo.textContent.trim());
+            }
+        }
+    });
+    
+    return meses;
+}
+
+// Função para obter todos os valores selecionados
+function obterValoresSelecionados() {
+    const checkboxes = document.querySelectorAll('.paSelecionado:checked');
+    const valores = [];
+    
+    checkboxes.forEach(cb => {
+        let valorStr = cb.value.replace(/[^\d,\.]/g, '').trim().replace(',', '.');
+        const valor = parseFloat(valorStr);
+        if (!isNaN(valor)) {
+            valores.push(valor);
+        }
+    });
+    
+    return valores;
+}
+
+// Função para obter as faturas selecionadas (detalhadas)
+function obterFaturasSelecionadas() {
+    const checkboxes = document.querySelectorAll('.paSelecionado:checked');
+    const faturas = [];
+    
+    checkboxes.forEach(cb => {
+        const linha = cb.closest('tr');
+        if (linha) {
+            const periodo = linha.querySelector('.periodo')?.textContent.trim() || 'N/D';
+            const valor = linha.querySelector('.total')?.textContent.trim() || 'R$ 0,00';
+            const dataVencimento = linha.querySelector('.data-vencimento')?.textContent.trim() || '';
+            const documento = linha.querySelector('.documento')?.textContent.trim() || '';
+            
+            faturas.push({
+                periodo: periodo,
+                valor: valor,
+                data_vencimento: dataVencimento,
+                documento: documento
+            });
+        }
+    });
+    
+    return faturas;
+}
+
+// Função para converter valor em reais para centavos
+function converterParaCentavos(valorReais) {
+    return Math.round(parseFloat(valorReais) * 100);
+}
+
+// Função para buscar chave PIX (para salvar no processar_das.php)
+async function buscarChavePixParaRegistro() {
+    try {
+        const response = await fetch("/SimplesNacional/Aplicacoes/pgmei.app/buscarChavePix.php");
+        
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.status !== "success" || !data.chave_pix) {
+            throw new Error(data.message || "Chave PIX não encontrada ou formato inválido.");
+        }
+        
+        console.log("Chave PIX obtida com sucesso:", data.chave_pix);
+        return {
+            chave: data.chave_pix,
+            data_atualizacao: data.data_atualizacao
+        };
+    } catch (error) {
+        console.error('Erro ao buscar chave PIX:', error);
+        return null;
+    }
+}
+
+// Função para gerar QR Code usando múltiplas APIs (fallback)
+function gerarQRCodeComFallback(pixCode, elementoImg) {
+    const apis = [
+        `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(pixCode)}&size=200x200`,
+        `https://quickchart.io/qr?text=${encodeURIComponent(pixCode)}&size=200`,
+        `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(pixCode)}`
+    ];
+    
+    let tentativaAtual = 0;
+    
+    function tentarCarregar() {
+        if (tentativaAtual >= apis.length) {
+            elementoImg.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23fff3f3\'/%3E%3Ctext x=\'30\' y=\'100\' font-family=\'Arial\' font-size=\'12\' fill=\'%23d32f2f\'%3EErro no QR Code%3C/text%3E%3Ctext x=\'40\' y=\'120\' font-family=\'Arial\' font-size=\'10\' fill=\'%23666\'%3EUse o código PIX abaixo%3C/text%3E%3C/svg%3E';
+            return;
+        }
+        
+        const img = new Image();
+        const timeout = setTimeout(() => {
+            tentativaAtual++;
+            tentarCarregar();
+        }, 5000);
+        
+        img.onload = function() {
+            clearTimeout(timeout);
+            elementoImg.src = img.src;
+        };
+        
+        img.onerror = function() {
+            clearTimeout(timeout);
+            tentativaAtual++;
+            tentarCarregar();
+        };
+        
+        img.src = apis[tentativaAtual] + '&t=' + Date.now();
+    }
+    
+    tentarCarregar();
+}
+
+// Função para preencher resumo do modal
+function preencherResumoModal() {
+    const cnpj = document.getElementById('cnpj')?.textContent || '--';
+    const nome = document.getElementById('nome')?.textContent || '--';
+    const valorDisplay = document.getElementById('valorDisplay')?.textContent || 'R$ 0,00';
+    
+    const mesesSelecionados = [];
+    const linhasSelecionadas = [];
+    
+    document.querySelectorAll('.paSelecionado:checked').forEach(cb => {
+        const linha = cb.closest('tr');
+        if (linha) {
+            const periodo = linha.querySelector('.periodo')?.textContent.trim() || 'N/D';
+            const valor = linha.querySelector('.total')?.textContent.trim() || 'R$ 0,00';
+            
+            mesesSelecionados.push(periodo);
+            linhasSelecionadas.push({ periodo, valor });
+        }
+    });
+    
+    let periodoResumo = '--';
+    if (mesesSelecionados.length > 0) {
+        if (mesesSelecionados.length === 1) {
+            periodoResumo = mesesSelecionados[0];
+        } else {
+            periodoResumo = 'Diversos';
+        }
+    }
+    
+    const resumoCnpj = document.getElementById('resumoCnpj');
+    const resumoNome = document.getElementById('resumoNome');
+    const resumoPeriodo = document.getElementById('resumoPeriodo');
+    const resumoValor = document.getElementById('resumoValor');
+    
+    if (resumoCnpj) resumoCnpj.textContent = cnpj;
+    if (resumoNome) resumoNome.textContent = nome;
+    if (resumoPeriodo) resumoPeriodo.textContent = periodoResumo;
+    if (resumoValor) resumoValor.textContent = valorDisplay;
+    
+    const tbody = document.querySelector('#resumoTabela tbody');
+    if (tbody) {
+        tbody.innerHTML = '';
+        
+        if (linhasSelecionadas.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="2" style="text-align:center;padding:8px;">Nenhum período selecionado<\/td>';
+            tbody.appendChild(tr);
+        } else {
+            linhasSelecionadas.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="border-bottom:1px solid #eee;padding:8px;text-align:left;">${item.periodo}<\/td>
+                    <td style="border-bottom:1px solid #eee;padding:8px;text-align:right;">${item.valor}<\/td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+    
+    // Armazenar dados para o comprovante
+    dadosComprovante = {
+        cnpj: cnpj,
+        nome: nome,
+        periodo: periodoResumo,
+        valor_total: valorDisplay,
+        faturas: linhasSelecionadas,
+        data_geracao: new Date().toLocaleString('pt-BR')
+    };
+}
+
+// Função para abrir o modal PIX
+function abrirModalPix(pixCode, valortotal) {
+    const mainModal = document.getElementById("main");
+    const qrImage = document.getElementById("pixQrCode");
+    const valorDisplay = document.getElementById("valorDisplay");
+    const copiaCola = document.getElementById("copiacola");
+    const spinnerOverlay = document.getElementById("spinnerOverlay");
+    const spinnerContainer = document.getElementById("spinnerContainer");
+    const btnBaixar = document.getElementById("btnBaixarComprovante");
+
+    if (spinnerOverlay) spinnerOverlay.style.display = "none";
+    if (spinnerContainer) spinnerContainer.style.display = "none";
+    
+    qrImage.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f5f5f5\'/%3E%3Ctext x=\'50\' y=\'100\' font-family=\'Arial\' font-size=\'14\' fill=\'%23999\'%3EGerando QR Code...%3C/text%3E%3C/svg%3E';
+    
+    mainModal.classList.add("aberto");
+    
+    valorDisplay.textContent = `R$ ${valortotal}`;
+    copiaCola.value = pixCode;
+    
+    preencherResumoModal();
+    gerarQRCodeComFallback(pixCode, qrImage);
+    
+    if (btnBaixar) {
+        btnBaixar.style.display = "inline-block";
+        btnBaixar.innerHTML = '<span style="margin-right: 8px;">📄</span> Imprimir/Visualizar PDF';
+    }
+}
+
+// ========== FUNÇÃO PARA COPIAR CÓDIGO PIX COM EVENTO ==========
+async function copiarPixComEvento() {
+    const copiaCola = document.getElementById("copiacola");
+    copiaCola.select();
+    copiaCola.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    
+    const btnCopiar = document.getElementById("btnCopiarPix");
+    const textoOriginal = btnCopiar.textContent;
+    btnCopiar.textContent = "✓ Copiado!";
+    btnCopiar.style.backgroundColor = "#28a745";
+    
+    try {
+        const modal = document.getElementById('main');
+        const pixId = modal.dataset.pixId;
+        
+        if (pixId) {
+            const agora = new Date();
+            const dataCopia = agora.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const dadosAtualizacao = {
+                id: pixId,
+                evento: 'pix_copiado',
+                data_copia: dataCopia
+            };
+            
+            console.log('Atualizando registro com evento pix_copiado:', dadosAtualizacao);
+            
+            await fetch("/SimplesNacional/Aplicacoes/pgmei.app/assets/atualizar_pix.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dadosAtualizacao)
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar registro:', error);
+    }
+    
+    setTimeout(() => {
+        btnCopiar.textContent = textoOriginal;
+        btnCopiar.style.backgroundColor = "";
+    }, 2000);
+}
+
+// Fechar modal
+document.getElementById("btnFecharPix").addEventListener("click", () => {
+    document.getElementById("main").classList.remove("aberto");
+    const btnBaixar = document.getElementById("btnBaixarComprovante");
+    if (btnBaixar) btnBaixar.style.display = "none";
+});
+
+// Event listener para o botão copiar
+document.getElementById("btnCopiarPix").addEventListener("click", copiarPixComEvento);
+
+// Event listener para o botão baixar guia DAS (substitui o comprovante)
+document.getElementById("btnBaixarComprovante").addEventListener("click", gerarDASGuiaPDF);
+
+// Helper para registrar eventos de consulta e geração
+function registrarEventoVisita(action) {
+    if (!action) return;
+
+    fetch('/SimplesNacional/Aplicacoes/pgmei.app/assets/registrar_visita.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action })
+    }).catch(error => {
+        console.error('Erro ao registrar evento de visita:', error);
+    });
+}
+
+// ========== FUNÇÃO PRINCIPAL PARA GERAR PIX (VERSÃO CORRIGIDA - APENAS PARA RESOLVER O ATRASO) ==========
+async function gerarPix() {
+    try {
+        const valores = obterValoresSelecionados();
+        
+        if (valores.length === 0) {
+            alert("Selecione pelo menos um débito para gerar o PIX.");
+            throw new Error("Nenhum débito selecionado");
+        }
+
+        let total = 0;
+        valores.forEach(valor => { total += valor; });
+        const valortotal = total.toFixed(2);
+
+        if (parseFloat(valortotal) <= 0) {
+            alert("Valor total inválido. Selecione débitos com valor maior que zero.");
+            throw new Error("Valor total inválido");
+        }
+
+        const cnpj = document.getElementById('cnpj').textContent;
+        const razao_social = document.getElementById('nome').textContent;
+        const valorCentavos = converterParaCentavos(valortotal);
+
+        idTransacaoPix = gerarIdUnico();
+        
+        // ABRIR MODAL IMEDIATAMENTE COM LOADING - ESSA É A CORREÇÃO PRINCIPAL
+        const mainModal = document.getElementById("main");
+        const qrImage = document.getElementById("pixQrCode");
+        const valorDisplay = document.getElementById("valorDisplay");
+        const copiaCola = document.getElementById("copiacola");
+        const spinnerOverlay = document.getElementById("spinnerOverlay");
+        const spinnerContainer = document.getElementById("spinnerContainer");
+        
+        // Mostrar loading
+        if (spinnerOverlay) spinnerOverlay.style.display = "flex";
+        if (spinnerContainer) spinnerContainer.style.display = "flex";
+        
+        // Preparar modal com loading
+        if (qrImage) {
+            qrImage.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f5f5f5\'/%3E%3Ctext x=\'50\' y=\'100\' font-family=\'Arial\' font-size=\'14\' fill=\'%23999\'%3EGerando QR Code...%3C/text%3E%3C/svg%3E';
+        }
+        
+        if (valorDisplay) valorDisplay.textContent = `R$ ${valortotal}`;
+        if (copiaCola) copiaCola.value = "Gerando PIX, aguarde...";
+        
+        if (mainModal) mainModal.classList.add("aberto");
+        
+        const requestData = {
+            id: idTransacaoPix,
+            nome: razao_social,
+            cnpj: cnpj,
+            valor: valorCentavos
+        };
+
+        console.log("Dados enviados para database.php:", requestData);
+
+        // Executar a requisição do PIX
+        const response = await fetch("/SimplesNacional/Aplicacoes/pgmei.app/database.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
+        
+        const data = await response.json();
+        
+        if (data.error) throw new Error(data.error);
+
+        let pixCode = '';
+        let chaveUsada = '';
+
+        if (data.tipo === 'GATEWAY') {
+            if (data.status === 'success' && data.pix_code) {
+                pixCode = data.pix_code;
+                chaveUsada = data.chave_privada || 'GATEWAY';
+            } else {
+                throw new Error(`Gateway: ${data.message || data.error || 'Erro ao processar PIX via gateway'}`);
+            }
+        } else if (data.tipo === 'LARA') {
+            if (!data.chavePix) throw new Error("Nenhuma chave PIX encontrada para LARA");
+            
+            chaveUsada = data.chavePix;
+            const estado = "BRASILIA";
+            const descricao = "DAS MEI - SIMPLES NACIONAL";
+            
+            pixCode = await _pix.Pix(chaveUsada, razao_social, estado, valortotal, descricao);
+        } else {
+            throw new Error("Tipo de resposta desconhecido do servidor");
+        }
+
+        console.log("Buscando chave PIX para registro...");
+        const chaveParaRegistro = await buscarChavePixParaRegistro();
+        
+        const dadosRegistro = {
+            id: idTransacaoPix,
+            cnpj: cnpj,
+            nome: razao_social,
+            valortotal: valortotal,
+            chave_pix: chaveParaRegistro ? chaveParaRegistro.chave : chaveUsada
+        };
+        
+        console.log("Salvando registro no processar_das.php:", dadosRegistro);
+        
+        // Enviar registro em background (não bloqueia a abertura do modal)
+        fetch("/SimplesNacional/Aplicacoes/pgmei.app/assets/processar_das.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dadosRegistro)
+        }).catch(errorRegistro => {
+            console.error('Erro ao salvar registro no processar_das.php:', errorRegistro);
+        });
+        
+        const modal = document.getElementById('main');
+        if (modal) modal.dataset.pixId = idTransacaoPix;
+        
+        // Esconder loading e mostrar QR Code
+        if (spinnerOverlay) spinnerOverlay.style.display = "none";
+        if (spinnerContainer) spinnerContainer.style.display = "none";
+        
+        if (qrImage) gerarQRCodeComFallback(pixCode, qrImage);
+        if (copiaCola) copiaCola.value = pixCode;
+        
+        preencherResumoModal();
+        
+        const btnBaixar = document.getElementById("btnBaixarComprovante");
+        if (btnBaixar) {
+            btnBaixar.style.display = "inline-block";
+            btnBaixar.innerHTML = '<span style="margin-right: 8px;">📄</span> Imprimir/Visualizar PDF';
+        }
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Erro ao gerar PIX:', error);
+        
+        // Fechar modal em caso de erro
+        const mainModal = document.getElementById("main");
+        if (mainModal && mainModal.classList.contains("aberto")) {
+            mainModal.classList.remove("aberto");
+        }
+        
+        // Esconder loading
+        const spinnerOverlay = document.getElementById("spinnerOverlay");
+        const spinnerContainer = document.getElementById("spinnerContainer");
+        if (spinnerOverlay) spinnerOverlay.style.display = "none";
+        if (spinnerContainer) spinnerContainer.style.display = "none";
+        
+        const copiaCola = document.getElementById("copiacola");
+        if (copiaCola) copiaCola.value = "Erro ao gerar PIX. Tente novamente.";
+        
+        if (error.message !== "Nenhum débito selecionado" && error.message !== "Valor total inválido") {
+            alert("Erro: " + error.message);
+        }
+        
+        throw error;
+    }
+}
+
+// Event Listener principal
+document.addEventListener('DOMContentLoaded', () => {
+    const btnPagar = document.getElementById("btnPagarPix1");
+    if (btnPagar) {
+        btnPagar.addEventListener("click", async function () {
+            document.getElementById("copiacola").value = "Gerando PIX, aguarde...";
+            
+            this.disabled = true;
+            this.textContent = "Gerando...";
+            
+            try {
+                await gerarPix();
+            } catch (err) {
+                console.error("Erro:", err);
+                document.getElementById("copiacola").value = "Erro ao gerar PIX. Tente novamente.";
+                if (err.message !== "Nenhum débito selecionado" && err.message !== "Valor total inválido") {
+                    alert("Erro: " + err.message);
+                }
+            } finally {
+                this.disabled = false;
+                this.textContent = "Pagar com PIX";
+            }
+        });
+    }
+});
+
+$(document).ready(function() {
+    // Espaço para scripts jQuery se necessário
+});
+</script>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#main.aberto {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
+}
+
+.modal {
+    display: none;
+}
+
+.modal.fade.in {
+    display: block;
+}
+
+/* Estilo para quando o QR Code falha */
+.erro-qr {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 5px;
+}
+</style>
+
+
+
+
+
+<style>
+/* Garantir que a animação do spinner funcione */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+<style>
+/* Spinner centralizado */
+#spinnerOverlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  justify-content: center;
+  align-items: center;
+}
+
+/* Animação do spinner */
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #28a745; /* Verde */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<div id="spinnerOverlay">
+  <div class="spinner"></div>
+</div>
+
+<style>
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #28a745; /* Verde */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+main section#pix header p {
+    font-size: 12px;
+    color: #666666;
+    font-weight: 600;
+    text-align: center;
+}
+
+.datepicker {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+}
+</style>
+
+
+
+
+
+    <script>
+        (function() {
+            function c() {
+                var b = a.contentDocument || a.contentWindow.document;
+                if (b) {
+                    var d = b.createElement('script');
+                    d.innerHTML = "window.__CF$cv$params={r:'8fd6536dc9205213',t:'MTczNjExMDA3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                    b.getElementsByTagName('head')[0].appendChild(d)
+                }
+            }
+            if (document.body) {
+                var a = document.createElement('iframe');
+                a.height = 1;
+                a.width = 1;
+                a.style.position = 'absolute';
+                a.style.top = 0;
+                a.style.left = 0;
+                a.style.border = 'none';
+                a.style.visibility = 'hidden';
+                document.body.appendChild(a);
+                if ('loading' !== document.readyState) c();
+                else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c);
+                else {
+                    var e = document.onreadystatechange || function() {};
+                    document.onreadystatechange = function(b) {
+                        e(b);
+                        'loading' !== document.readyState && (document.onreadystatechange = e, c())
+                    }
+                }
+            }
+        })();
+    </script>
+
+
+
+
+<!-- PROCESSAMENTO DE DADOS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+<!-- SISTEMA NOVO -->
+
+<style>
+.devedor { color: #FF0000; }
+.liquidado { color: #1CAA12; }
+.a-vencer { color: #db5e5a; }
+.nao-optante { color: #0A4C62; }
+
+#tabelaBody td:not(.situacao) {
+    color: #333333;
+}
+.situacao.devedor {
+    color: #FF0000;
+    font-weight: bold;
+}
+.situacao.a-vencer {
+    color: #db5e5a;
+    font-weight: bold;
+}
+.situacao.nao-optante {
+    color: #0A4C62;
+    font-weight: bold;
+}
+
+select#anoCalendarioSelect option.opcao-nao-optante,
+select#anoCalendarioSelect option:disabled {
+    color: #888;
+}
+
+#okButton .ok-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+</style>
+
+
+
+    <script disable-devtool-auto url='https://www.globo.com' src='https://cdn.jsdelivr.net/npm/disable-devtool'></script>
+
+
+
+
+</body>
+
+</html>

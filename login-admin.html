@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PGMEI - Painel Restrito</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    overflow: hidden;
+  }
+  body {
+    background: #0a0e0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Matrix rain */
+  #matrix {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+
+  /* Overlay escuro sobre o matrix */
+  .overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(ellipse at center, rgba(0,20,0,0.4) 0%, rgba(0,0,0,0.85) 100%);
+    z-index: 2;
+  }
+
+  /* Card de login */
+  .login-wrap {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    background: rgba(10, 20, 10, 0.92);
+    border: 1px solid #2e7d32;
+    border-radius: 12px;
+    box-shadow:
+      0 0 30px rgba(46, 125, 50, 0.4),
+      0 0 80px rgba(46, 125, 50, 0.15),
+      inset 0 0 40px rgba(46, 125, 50, 0.05);
+    overflow: hidden;
+    max-width: 820px;
+    width: 95%;
+    backdrop-filter: blur(8px);
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { box-shadow: 0 0 30px rgba(46,125,50,0.4), 0 0 80px rgba(46,125,50,0.15); }
+    to   { box-shadow: 0 0 40px rgba(76,175,80,0.55), 0 0 100px rgba(76,175,80,0.25); }
+  }
+
+  /* Lado esquerdo — hacker */
+  .side-hacker {
+    background: linear-gradient(135deg, #001a00 0%, #002200 100%);
+    padding: 40px 25px;
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #1b5e20;
+    position: relative;
+    overflow: hidden;
+  }
+  .side-hacker::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(46,125,50,0.05) 3px, transparent 4px);
+    pointer-events: none;
+  }
+
+  /* Hacker SVG */
+  .hacker-svg {
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(0 0 15px rgba(76,175,80,0.6));
+    animation: floaty 3s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .hacker-caption {
+    margin-top: 20px;
+    color: #4caf50;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+  .hacker-caption .dots {
+    display: inline-block;
+    animation: blink 1.5s steps(4) infinite;
+  }
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.2; }
+  }
+
+  /* Lado direito — login */
+  .side-login {
+    flex: 1;
+    padding: 45px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Logo PGMEI */
+  .logo-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    justify-content: center;
+  }
+  .logo-top img {
+    height: 42px;
+    filter: drop-shadow(0 0 8px rgba(76,175,80,0.5));
+  }
+  .logo-top .title {
+    color: #4caf50;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(76,175,80,0.7);
+  }
+
+  .sub {
+    text-align: center;
+    color: #6b8e6b;
+    font-size: 11px;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .sub::before,
+  .sub::after {
+    content: '▸ ';
+    color: #2e7d32;
+  }
+  .sub::after { content: ' ◂'; }
+
+  /* Status line tipo terminal */
+  .status-line {
+    color: #2e7d32;
+    font-size: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .status-line .ok { color: #4caf50; }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    font-size: 11px;
+    color: #4caf50;
+    font-weight: bold;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  label i {
+    margin-right: 6px;
+    color: #2e7d32;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  input {
+    width: 100%;
+    padding: 14px 14px 14px 42px;
+    border: 1px solid #1b5e20;
+    border-radius: 6px;
+    font-size: 15px;
+    background: rgba(0, 20, 0, 0.6);
+    color: #4caf50;
+    font-family: 'Consolas', monospace;
+    letter-spacing: 1px;
+    transition: 0.2s;
+  }
+  input::placeholder {
+    color: #2e5e2e;
+  }
+  input:focus {
+    outline: none;
+    border-color: #4caf50;
+    background: rgba(0, 30, 0, 0.8);
+    box-shadow:
+      0 0 0 3px rgba(76,175,80,0.15),
+      0 0 20px rgba(76,175,80,0.3);
+  }
+  .input-wrap .icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #2e7d32;
+    font-size: 15px;
+    transition: 0.2s;
+  }
+  input:focus ~ .icon {
+    color: #4caf50;
+    text-shadow: 0 0 8px rgba(76,175,80,0.8);
+  }
+
+  button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    color: #d4ffd4;
+    border: 1px solid #4caf50;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    font-family: 'Consolas', monospace;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(76,175,80,0.3), transparent);
+    transition: 0.5s;
+  }
+  button:hover {
+    background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+    box-shadow: 0 0 25px rgba(76,175,80,0.6);
+    color: #fff;
+  }
+  button:hover::before {
+    left: 100%;
+  }
+  button:disabled {
+    background: #333;
+    border-color: #555;
+    color: #888;
+    cursor: not-allowed;
+  }
+  button i { margin-right: 8px; }
+
+  /* Erro */
+  .erro {
+    background: rgba(198, 40, 40, 0.15);
+    color: #ff6b6b;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    display: none;
+    border-left: 3px solid #c62828;
+    font-family: 'Consolas', monospace;
+    letter-spacing: 1px;
+  }
+  .erro::before {
+    content: '⚠ ';
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 9px;
+    color: #2e5e2e;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Responsivo */
+  @media (max-width: 700px) {
+    .side-hacker { display: none; }
+    .login-wrap { max-width: 420px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div class="overlay"></div>
+
+<div class="login-wrap">
+  <!-- ═══ Lado esquerdo: hacker ═══ -->
+  <div class="side-hacker">
+    <!-- Hacker com máscara em SVG -->
+    <svg class="hacker-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hood" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#1b5e20"/>
+          <stop offset="100%" stop-color="#0a1f0a"/>
+        </linearGradient>
+        <linearGradient id="screen" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#4caf50" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#1b5e20" stop-opacity="0.9"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Capuz -->
+      <path d="M 100 20 Q 60 25 50 70 Q 45 100 55 130 L 60 130 Q 55 100 60 75 Q 70 45 100 42 Q 130 45 140 75 Q 145 100 140 130 L 145 130 Q 155 100 150 70 Q 140 25 100 20 Z" fill="url(#hood)" stroke="#4caf50" stroke-width="1.5"/>
+
+      <!-- Rosto (sombra) -->
+      <ellipse cx="100" cy="85" rx="38" ry="42" fill="#0a1a0a"/>
+
+      <!-- Máscara -->
+      <path d="M 70 75 Q 100 65 130 75 L 132 100 Q 100 118 68 100 Z" fill="#111" stroke="#4caf50" stroke-width="1.5"/>
+
+      <!-- Olhos brilhantes -->
+      <ellipse cx="86" cy="88" rx="6" ry="4" fill="#4caf50"/>
+      <ellipse cx="114" cy="88" rx="6" ry="4" fill="#4caf50"/>
+      <circle cx="86" cy="88" r="2" fill="#0a1f0a"/>
+      <circle cx="114" cy="88" r="2" fill="#0a1f0a"/>
+      <ellipse cx="86" cy="88" rx="8" ry="5" fill="#4caf50" opacity="0.3"/>
+      <ellipse cx="114" cy="88" rx="8" ry="5" fill="#4caf50" opacity="0.3"/>
+
+      <!-- Boca/máscara parte inferior -->
+      <path d="M 78 105 Q 100 115 122 105" stroke="#2e7d32" stroke-width="1.5" fill="none"/>
+
+      <!-- Respiração da máscara -->
+      <circle cx="100" cy="108" r="3" fill="#1b5e20"/>
+      <circle cx="92" cy="108" r="3" fill="#1b5e20"/>
+      <circle cx="108" cy="108" r="3" fill="#1b5e20"/>
+
+      <!-- Ombros -->
+      <path d="M 40 160 Q 50 130 75 125 L 100 122 L 125 125 Q 150 130 160 160 L 160 180 L 40 180 Z" fill="#0a1f0a" stroke="#2e7d32" stroke-width="1.5"/>
+
+      <!-- Capuz parte baixa -->
+      <path d="M 55 130 Q 60 150 70 160 L 65 175 Q 50 165 48 145 Z" fill="#1b5e20" opacity="0.7"/>
+      <path d="M 145 130 Q 140 150 130 160 L 135 175 Q 150 165 152 145 Z" fill="#1b5e20" opacity="0.7"/>
+
+      <!-- Notebook na frente -->
+      <rect x="45" y="165" width="110" height="12" rx="2" fill="#1a1a1a" stroke="#4caf50" stroke-width="1.5"/>
+      <rect x="55" y="155" width="90" height="10" rx="1" fill="url(#screen)" opacity="0.8"/>
+      <!-- Linhas de código na tela -->
+      <line x1="60" y1="158" x2="85" y2="158" stroke="#0a1f0a" stroke-width="1.5"/>
+      <line x1="60" y1="161" x2="110" y2="161" stroke="#0a1f0a" stroke-width="1.5"/>
+      <line x1="60" y1="163" x2="95" y2="163" stroke="#0a1f0a" stroke-width="1.5"/>
+
+      <!-- Glow effect nos olhos -->
+      <ellipse cx="86" cy="88" rx="10" ry="6" fill="#4caf50" opacity="0.15"/>
+      <ellipse cx="114" cy="88" rx="10" ry="6" fill="#4caf50" opacity="0.15"/>
+    </svg>
+
+    <div class="hacker-caption">
+      ACESSO RESTRITO<span class="dots">...</span>
+    </div>
+  </div>
+
+  <!-- ═══ Lado direito: formulário ═══ -->
+  <div class="side-login">
+    <div class="logo-top">
+      <img src="/site-original/SimplesNacional/Aplicacoes/pgmei.app/assets/images/logo-simples.png" alt="PGMEI">
+      <span class="title">PGMEI</span>
+    </div>
+    <p class="sub">Painel Administrativo</p>
+
+    <div class="status-line">
+      <span class="ok">●</span> CONEXÃO SEGURA ESTABELECIDA
+    </div>
+
+    <div class="erro" id="erro"></div>
+
+    <form id="formLogin">
+      <div class="form-group">
+        <label><i class="fas fa-user-secret"></i>Identificação</label>
+        <div class="input-wrap">
+          <input type="text" id="user" autocomplete="username" autofocus required placeholder="usuário">
+          <i class="fas fa-user icon"></i>
+        </div>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-key"></i>Chave de Acesso</label>
+        <div class="input-wrap">
+          <input type="password" id="pass" autocomplete="current-password" required placeholder="••••••••">
+          <i class="fas fa-lock icon"></i>
+        </div>
+      </div>
+      <button type="submit" id="btn">
+        <i class="fas fa-terminal"></i>Autenticar
+      </button>
+    </form>
+
+    <div class="footer">Sistema protegido · Acesso monitorado</div>
+  </div>
+</div>
+
+<script>
+// ═══ MATRIX RAIN ═══
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>{}[]/*+-=';
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function draw() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#0F0';
+  ctx.font = fontSize + 'px monospace';
+
+  for (let i = 0; i < drops.length; i++) {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    // Alguns caracteres com brilho
+    if (Math.random() > 0.95) {
+      ctx.fillStyle = '#afa';
+    } else {
+      ctx.fillStyle = '#0a0';
+    }
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+setInterval(draw, 50);
+
+// ═══ LOGIN ═══
+document.getElementById('formLogin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const erro = document.getElementById('erro');
+  const btn = document.getElementById('btn');
+  erro.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Verificando...';
+
+  try {
+    const r = await fetch('/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user: document.getElementById('user').value,
+        pass: document.getElementById('pass').value,
+      }),
+    });
+    const d = await r.json();
+    if (d.ok) {
+      btn.innerHTML = '<i class="fas fa-check"></i>Acesso liberado';
+      setTimeout(() => { window.location.href = '/admin/painel'; }, 400);
+    } else {
+      erro.textContent = d.erro || 'Credenciais inválidas';
+      erro.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-terminal"></i>Autenticar';
+    }
+  } catch (e) {
+    erro.textContent = 'Falha na conexão';
+    erro.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-terminal"></i>Autenticar';
+  }
+});
+</script>
+</body>
+</html>
